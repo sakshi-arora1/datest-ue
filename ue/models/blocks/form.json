@@ -1,0 +1,14 @@
+{
+  "definitions": [{
+    "title": "Form", "id": "form", "model": "form",
+    "plugins": { "da": {
+      "unsafeHTML": "<div class=\"form\"><div><div><a href=\"\"></a></div></div></div>",
+      "fields": [{ "name": "reference", "selector": "div>div>a[href]" }]
+    }}
+  }],
+  "models": [{
+    "id": "form",
+    "fields": [{ "component": "text", "valueType": "string", "name": "reference", "label": "Form definition URL (e.g. /forms/contact.json)" }]
+  }],
+  "filters": []
+}
