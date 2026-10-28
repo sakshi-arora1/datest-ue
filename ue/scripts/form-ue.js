@@ -71,6 +71,11 @@ export function annotateForm(block, formIndex = getFormBlocks().indexOf(block)) 
   const def = readDefinition(block);
   if (!formEl || !def || formIndex < 0) return;
 
+  // the raw JSON is edited field by field, so hide it from UE's content tree
+  const code = block.querySelector('pre > code');
+  [...code.attributes].filter((a) => a.name.startsWith('data-aue-'))
+    .forEach((a) => code.removeAttribute(a.name));
+
   formEl.setAttribute('data-aue-resource', resourceOf(formIndex, []));
   formEl.setAttribute('data-aue-type', 'container');
   formEl.setAttribute('data-aue-filter', FIELDS_FILTER);

@@ -596,9 +596,9 @@ export default async function decorate(block) {
       block,
       editMode: block.classList.contains('edit-mode'),
     }));
-    // In Universal Editor the instrumented <code data-aue-prop> must stay in the DOM,
-    // otherwise UE cannot read the property value of the form definition.
-    if (container.querySelector('[data-aue-prop]')) {
+    // In Universal Editor (instrumented block) keep the JSON source in the DOM, hidden:
+    // the form field editing support reads the definition from it.
+    if (block.hasAttribute('data-aue-resource')) {
       container.hidden = true;
       container.after(form);
     } else {

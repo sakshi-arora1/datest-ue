@@ -146,14 +146,7 @@
   },
   {
     "id": "form",
-    "fields": [
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "definition",
-        "label": "Form definition (JSON)"
-      }
-    ]
+    "fields": []
   },
   {
     "id": "fragment",
