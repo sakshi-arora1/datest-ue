@@ -596,6 +596,13 @@ export default async function decorate(block) {
       block,
       editMode: block.classList.contains('edit-mode'),
     }));
-    container.replaceWith(form);
+    // In Universal Editor the instrumented <code data-aue-prop> must stay in the DOM,
+    // otherwise UE cannot read the property value of the form definition.
+    if (container.querySelector('[data-aue-prop]')) {
+      container.hidden = true;
+      container.after(form);
+    } else {
+      container.replaceWith(form);
+    }
   }
 }
