@@ -81,7 +81,7 @@
     ]
   },
   {
-    "id": "form",
+    "id": "form-fields",
     "components": [
       "captcha",
       "checkbox",

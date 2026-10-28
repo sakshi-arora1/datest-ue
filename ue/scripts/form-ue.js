@@ -7,6 +7,8 @@
  * (ue/proxy), which edits the JSON in DA and returns the updated form block.
  */
 const FORM_URN = 'urn:fj:';
+// must differ from the block name "form", otherwise DA treats the block rows as items
+const FIELDS_FILTER = 'form-fields';
 const OOTB_TYPES_WITHOUT_MODEL = ['wizard', 'toggleable-link', 'modal'];
 
 const LEGACY_FIELD_TYPES = {
@@ -71,7 +73,7 @@ export function annotateForm(block, formIndex = getFormBlocks().indexOf(block)) 
 
   formEl.setAttribute('data-aue-resource', resourceOf(formIndex, []));
   formEl.setAttribute('data-aue-type', 'container');
-  formEl.setAttribute('data-aue-filter', 'form');
+  formEl.setAttribute('data-aue-filter', FIELDS_FILTER);
   formEl.setAttribute('data-aue-label', def.title || 'Form fields');
 
   const fields = indexFields(def);
@@ -85,7 +87,7 @@ export function annotateForm(block, formIndex = getFormBlocks().indexOf(block)) 
     if (fd.fieldType === 'panel') {
       wrapper.setAttribute('data-aue-type', 'container');
       wrapper.setAttribute('data-aue-behavior', 'component');
-      wrapper.setAttribute('data-aue-filter', 'form');
+      wrapper.setAttribute('data-aue-filter', FIELDS_FILTER);
     } else {
       wrapper.setAttribute('data-aue-type', 'component');
     }

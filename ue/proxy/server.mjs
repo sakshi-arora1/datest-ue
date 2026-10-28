@@ -17,12 +17,21 @@ const UPSTREAM = process.env.UE_UPSTREAM || 'https://universal-editor-service.ad
 const DEBUG = process.env.DEBUG === '1';
 
 const CORS_HEADERS = {
-  'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-  'access-control-allow-headers': '*',
   'access-control-allow-private-network': 'true',
   'access-control-max-age': '600',
 };
+
+// UE calls the service with credentials, so the origin must be echoed (no wildcard).
+function corsHeaders(req) {
+  return {
+    ...CORS_HEADERS,
+    'access-control-allow-origin': req.headers.origin || '*',
+    'access-control-allow-credentials': 'true',
+    'access-control-allow-headers': req.headers['access-control-request-headers'] || '*',
+    vary: 'Origin',
+  };
+}
 
 const HOP_HEADERS = ['host', 'connection', 'content-length', 'accept-encoding', 'origin', 'referer'];
 
@@ -35,9 +44,9 @@ function readBody(req) {
   });
 }
 
-function send(res, status, body, headers = {}) {
+function send(req, res, status, body, headers = {}) {
   const payload = typeof body === 'string' || Buffer.isBuffer(body) ? body : JSON.stringify(body);
-  res.writeHead(status, { 'content-type': 'application/json', ...headers, ...CORS_HEADERS });
+  res.writeHead(status, { 'content-type': 'application/json', ...headers, ...corsHeaders(req) });
   res.end(payload);
 }
 
@@ -69,12 +78,12 @@ async function forward(req, res, rawBody, json) {
     if (!['content-encoding', 'content-length', 'transfer-encoding', 'connection'].includes(k)
       && !k.startsWith('access-control-')) outHeaders[k] = v;
   });
-  send(res, upstream.status, text, outHeaders);
+  send(req, res, upstream.status, text, outHeaders);
 }
 
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, CORS_HEADERS);
+    res.writeHead(204, corsHeaders(req));
     res.end();
     return;
   }
@@ -91,13 +100,19 @@ const server = http.createServer(async (req, res) => {
     if (json && isFormRequest(json)) {
       const result = await handleFormRequest(req.url, json, req.headers);
       log('<- form', req.url, result.status, JSON.stringify(result.body).slice(0, 300));
-      send(res, result.status, result.body);
+      send(req, res, result.status, result.body);
+      return;
+    }
+    // configuration for the fj connection alone: nothing to ask upstream for
+    if (json && Array.isArray(json.connections) && json.connections.length
+      && stripFormConnection(json).connections.length === 0) {
+      send(req, res, 200, { capabilities: {} });
       return;
     }
     await forward(req, res, rawBody, json);
   } catch (e) {
     log('!! error', req.url, e.stack || e.message);
-    send(res, e.status || 500, { error: e.message });
+    send(req, res, e.status || 500, { error: e.message });
   }
 });
 
