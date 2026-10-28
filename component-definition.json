@@ -212,11 +212,11 @@
           "model": "form",
           "plugins": {
             "da": {
-              "unsafeHTML": "<div class=\"form\"><div><div><a href=\"\"></a></div></div></div>",
+              "unsafeHTML": "<div class=\"form\"><div><div><pre><code>{\"adaptiveform\":\"0.10.0\",\"metadata\":{\"grammar\":\"json-formula-1.0.0\",\"version\":\"1.0.0\"},\"items\":[]}</code></pre></div></div></div>",
               "fields": [
                 {
-                  "name": "reference",
-                  "selector": "div>div>a[href]"
+                  "name": "definition",
+                  "selector": "div>div>pre>code"
                 }
               ]
             }

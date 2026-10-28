@@ -150,8 +150,8 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "reference",
-        "label": "Form definition URL (e.g. /forms/contact.json)"
+        "name": "definition",
+        "label": "Form definition (JSON)"
       }
     ]
   },

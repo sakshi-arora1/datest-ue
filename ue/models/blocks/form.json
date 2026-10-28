@@ -1,14 +1,34 @@
 {
-  "definitions": [{
-    "title": "Form", "id": "form", "model": "form",
-    "plugins": { "da": {
-      "unsafeHTML": "<div class=\"form\"><div><div><a href=\"\"></a></div></div></div>",
-      "fields": [{ "name": "reference", "selector": "div>div>a[href]" }]
-    }}
-  }],
-  "models": [{
-    "id": "form",
-    "fields": [{ "component": "text", "valueType": "string", "name": "reference", "label": "Form definition URL (e.g. /forms/contact.json)" }]
-  }],
+  "definitions": [
+    {
+      "title": "Form",
+      "id": "form",
+      "model": "form",
+      "plugins": {
+        "da": {
+          "unsafeHTML": "<div class=\"form\"><div><div><pre><code>{\"adaptiveform\":\"0.10.0\",\"metadata\":{\"grammar\":\"json-formula-1.0.0\",\"version\":\"1.0.0\"},\"items\":[]}</code></pre></div></div></div>",
+          "fields": [
+            {
+              "name": "definition",
+              "selector": "div>div>pre>code"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "form",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "definition",
+          "label": "Form definition (JSON)"
+        }
+      ]
+    }
+  ],
   "filters": []
 }
