@@ -29,6 +29,18 @@
           "...": "./blocks/*.json#/definitions"
         }
       ]
+    },
+    {
+      "title": "Adaptive Form Components",
+      "id": "form-components",
+      "components": [
+        {
+          "...": "../../blocks/form/models/form-components/_*.json#/definitions"
+        },
+        {
+          "...": "../../blocks/form/components/*/_*.json#/definitions"
+        }
+      ]
     }
   ]
 }

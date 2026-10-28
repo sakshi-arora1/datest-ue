@@ -12,6 +12,7 @@
 
 import { showSlide } from '../../blocks/carousel/carousel.js';
 import { moveInstrumentation } from './ue-utils.js';
+import setupFormEditing from './form-ue.js';
 
 const setupObservers = () => {
   const mutatingBlocks = document.querySelectorAll('div.cards, div.carousel, div.accordion');
@@ -85,46 +86,6 @@ const setupObservers = () => {
   });
 };
 
-const getFormBlock = (resource) => {
-  if (!resource) return null;
-  const element = document.querySelector(`[data-aue-resource="${resource}"]`);
-  const block = element?.closest('.form[data-aue-resource]');
-  return block?.getAttribute('data-aue-resource') === resource ? block : null;
-};
-
-// The form block renders its inline JSON (pre > code) into a <form>, so UE's default
-// DOM swap would leave an undecorated block. Re-render it from the updated content instead.
-const rerenderFormBlock = async (block, detail) => {
-  const resource = block.getAttribute('data-aue-resource');
-  const content = detail?.response?.updates?.[0]?.content;
-  if (!content) return false;
-
-  const updated = new DOMParser().parseFromString(content, 'text/html');
-  const newBlock = updated.querySelector(`[data-aue-resource="${resource}"]`) || updated.querySelector('.form');
-  if (!newBlock?.querySelector('pre > code')) return false;
-
-  block.replaceChildren(...newBlock.children);
-  const { default: decorate } = await import('../../blocks/form/form.js');
-  await decorate(block);
-  return true;
-};
-
-const setupFormHandlers = () => {
-  ['aue:content-update', 'aue:content-patch'].forEach((eventType) => {
-    document.body.addEventListener(eventType, (event) => {
-      const { detail } = event;
-      const block = getFormBlock(detail?.request?.target?.resource);
-      if (!block) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      rerenderFormBlock(block, detail)
-        .then((applied) => { if (!applied) window.location.reload(); })
-        .catch(() => window.location.reload());
-    }, true);
-  });
-};
-
 const setupUEEventHandlers = () => {
   // For each picture or img element change, update the srcsets of the picture element sources
   document.body.addEventListener('aue:content-patch', ({ detail: { patch, request } }) => {
@@ -187,5 +148,5 @@ const setupUEEventHandlers = () => {
 export default () => {
   setupObservers();
   setupUEEventHandlers();
-  setupFormHandlers();
+  setupFormEditing();
 };
