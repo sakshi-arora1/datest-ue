@@ -55,10 +55,20 @@ function log(...args) {
   console.log(new Date().toISOString(), ...args);
 }
 
-// The "fj" connection only exists for this proxy; never send it upstream.
+// The "fj" connection and its urn:fj: resources only exist for this proxy; never send them
+// upstream (e.g. publish/unpublish reference lists). Form fields are published with the page.
 function stripFormConnection(json) {
-  if (!json || !Array.isArray(json.connections)) return json;
-  return { ...json, connections: json.connections.filter((c) => c.name !== 'fj') };
+  const strip = (v) => {
+    if (Array.isArray(v)) {
+      return v.filter((x) => !(typeof x === 'string' && x.startsWith('urn:fj:'))
+        && !(x && x.name === 'fj')).map(strip);
+    }
+    if (v && typeof v === 'object') {
+      return Object.fromEntries(Object.entries(v).map(([k, val]) => [k, strip(val)]));
+    }
+    return v;
+  };
+  return strip(json);
 }
 
 async function forward(req, res, rawBody, json) {
