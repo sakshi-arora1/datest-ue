@@ -38,14 +38,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "Captcha (Invisible)",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "fieldType",
@@ -56,14 +49,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "captcha",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "required",
@@ -78,14 +64,7 @@
                 false
               ],
               "default": true,
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -326,7 +305,7 @@
             },
             {
               "name": "properties_afs_layout_orientation",
-              "dataRef": "$.properties['afs:layout'].orientation",
+              "dataRef": "$.properties.\"afs:layout\".orientation",
               "label": {
                 "value": "Display Options"
               },
@@ -426,14 +405,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "checkbox-group",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -648,15 +620,8 @@
               },
               "fieldType": "text-input",
               "type": "string",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    {
-                      "var": "properties.enableUncheckedValue"
-                    },
-                    true
-                  ]
-                }
+              "rules": {
+                "visible": "properties_enableUncheckedValue.$value == true()"
               }
             },
             {
@@ -752,14 +717,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "checkbox",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -1103,14 +1061,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "date-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -1443,14 +1394,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "drop-down",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -1777,14 +1721,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "email",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -2099,14 +2036,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "file-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "type",
@@ -2117,14 +2047,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "file",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -2331,32 +2254,18 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "panel",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "_type",
-              "dataRef": "$[':type']",
+              "dataRef": "$.\":type\"",
               "label": {
                 "value": ":type"
               },
               "fieldType": "text-input",
               "type": "string",
               "default": "accordion",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "minOccur",
@@ -2367,14 +2276,7 @@
               "fieldType": "number-input",
               "type": "number",
               "default": 1,
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -2533,14 +2435,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "button",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -2674,14 +2569,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "image",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -2888,32 +2776,18 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "panel",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "_type",
-              "dataRef": "$[':type']",
+              "dataRef": "$.\":type\"",
               "label": {
                 "value": ":type"
               },
               "fieldType": "text-input",
               "type": "string",
               "default": "modal",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -3072,14 +2946,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "reset",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "fieldType",
@@ -3090,14 +2957,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "button",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "events_click",
@@ -3108,14 +2968,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "dispatch($form, 'reset')",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -3162,7 +3015,7 @@
           "items": [
             {
               "name": "properties_fd_submit_actionName",
-              "dataRef": "$.properties['fd:submit'].actionName",
+              "dataRef": "$.properties.\"fd:submit\".actionName",
               "label": {
                 "value": "Submit action"
               },
@@ -3180,7 +3033,7 @@
             },
             {
               "name": "properties_fd_submit_configUrl",
-              "dataRef": "$.properties['fd:submit'].configUrl",
+              "dataRef": "$.properties.\"fd:submit\".configUrl",
               "label": {
                 "value": "Submission configuration sheet"
               },
@@ -3385,14 +3238,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "submit",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "fieldType",
@@ -3403,14 +3249,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "button",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "events_click",
@@ -3421,14 +3260,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "submitForm()",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -3768,14 +3600,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "multiline-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -4131,14 +3956,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "number-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -4335,15 +4153,8 @@
               "type": "number",
               "default": 1,
               "description": "Minimum number of times the panel appears on the form",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    {
-                      "var": "properties.repeatable"
-                    },
-                    true
-                  ]
-                }
+              "rules": {
+                "visible": "properties_repeatable.$value == true()"
               }
             },
             {
@@ -4356,27 +4167,8 @@
               "type": "number",
               "placeholder": "No Limit",
               "description": "Maximum number of times the panel can appear on the form. No value indicates no limit.",
-              "properties": {
-                "fe:visibleWhen": {
-                  "and": [
-                    {
-                      "===": [
-                        {
-                          "var": "properties.repeatable"
-                        },
-                        true
-                      ]
-                    },
-                    {
-                      "!==": [
-                        {
-                          "var": "properties.variant"
-                        },
-                        "noButtons"
-                      ]
-                    }
-                  ]
-                }
+              "rules": {
+                "visible": "properties_repeatable.$value == true() && properties_variant.$value != 'noButtons'"
               }
             },
             {
@@ -4396,15 +4188,8 @@
                 "Add & Delete Buttons"
               ],
               "default": "addDeleteButtons",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    {
-                      "var": "properties.repeatable"
-                    },
-                    true
-                  ]
-                }
+              "rules": {
+                "visible": "properties_repeatable.$value == true()"
               }
             },
             {
@@ -4416,27 +4201,8 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "Add",
-              "properties": {
-                "fe:visibleWhen": {
-                  "and": [
-                    {
-                      "===": [
-                        {
-                          "var": "properties.variant"
-                        },
-                        "addDeleteButtons"
-                      ]
-                    },
-                    {
-                      "===": [
-                        {
-                          "var": "properties.repeatable"
-                        },
-                        true
-                      ]
-                    }
-                  ]
-                }
+              "rules": {
+                "visible": "properties_repeatable.$value == true() && properties_variant.$value == 'addDeleteButtons'"
               }
             },
             {
@@ -4448,27 +4214,8 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "Delete",
-              "properties": {
-                "fe:visibleWhen": {
-                  "and": [
-                    {
-                      "===": [
-                        {
-                          "var": "properties.variant"
-                        },
-                        "addDeleteButtons"
-                      ]
-                    },
-                    {
-                      "===": [
-                        {
-                          "var": "properties.repeatable"
-                        },
-                        true
-                      ]
-                    }
-                  ]
-                }
+              "rules": {
+                "visible": "properties_repeatable.$value == true() && properties_variant.$value == 'addDeleteButtons'"
               }
             }
           ]
@@ -4513,14 +4260,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "panel",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -4829,32 +4569,18 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "text-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "_type",
-              "dataRef": "$[':type']",
+              "dataRef": "$.\":type\"",
               "label": {
                 "value": ":type"
               },
               "fieldType": "text-input",
               "type": "string",
               "default": "password",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -4974,14 +4700,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "Text",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "fieldType",
@@ -4992,14 +4711,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "plain-text",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "properties_textIsRich",
@@ -5014,14 +4726,7 @@
                 false
               ],
               "default": true,
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -5261,7 +4966,7 @@
             },
             {
               "name": "properties_afs_layout_orientation",
-              "dataRef": "$.properties['afs:layout'].orientation",
+              "dataRef": "$.properties.\"afs:layout\".orientation",
               "label": {
                 "value": "Display Options"
               },
@@ -5361,14 +5066,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "radio-group",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -5676,32 +5374,18 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "number-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "_type",
-              "dataRef": "$[':type']",
+              "dataRef": "$.\":type\"",
               "label": {
                 "value": ":type"
               },
               "fieldType": "text-input",
               "type": "string",
               "default": "range",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -5990,32 +5674,18 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "number-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "_type",
-              "dataRef": "$[':type']",
+              "dataRef": "$.\":type\"",
               "label": {
                 "value": ":type"
               },
               "fieldType": "text-input",
               "type": "string",
               "default": "rating",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -6322,32 +5992,18 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "text-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "_type",
-              "dataRef": "$[':type']",
+              "dataRef": "$.\":type\"",
               "label": {
                 "value": ":type"
               },
               "fieldType": "text-input",
               "type": "string",
               "default": "telephone-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -6687,14 +6343,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "text-input",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -6914,32 +6563,18 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "panel",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "_type",
-              "dataRef": "$[':type']",
+              "dataRef": "$.\":type\"",
               "label": {
                 "value": ":type"
               },
               "fieldType": "text-input",
               "type": "string",
               "default": "tnc",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }
@@ -7146,14 +6781,7 @@
               "fieldType": "text-input",
               "type": "string",
               "default": "panel",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "minOccur",
@@ -7164,32 +6792,18 @@
               "fieldType": "number-input",
               "type": "number",
               "default": 1,
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             },
             {
               "name": "_type",
-              "dataRef": "$[':type']",
+              "dataRef": "$.\":type\"",
               "label": {
                 "value": ":type"
               },
               "fieldType": "text-input",
               "type": "string",
               "default": "wizard",
-              "properties": {
-                "fe:visibleWhen": {
-                  "===": [
-                    1,
-                    0
-                  ]
-                }
-              }
+              "visible": false
             }
           ]
         }

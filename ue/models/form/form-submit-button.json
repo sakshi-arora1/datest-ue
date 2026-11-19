@@ -323,14 +323,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "submit",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "fieldType",
@@ -341,14 +334,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "button",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "events_click",
@@ -359,14 +345,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "submitForm()",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

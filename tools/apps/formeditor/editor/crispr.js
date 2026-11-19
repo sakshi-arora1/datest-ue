@@ -17,14 +17,14 @@
 /*
  * Pure helpers for Crispr (Adaptive Form JSON) definitions stored as Structured Content documents.
  *
- * A form is a JSON document in DA (for example /forms/contact.json) in the Structured Content
- * document shape, as agreed in the SC "JSON storage format" RFC:
+ * A form is a Structured Content document (for example /forms/contact), whose JSON document is
  *
  *   { "metadata": { "schemaName": "adaptive-form", ... }, "data": { ...Crispr form... } }
  *
- * The document is stored and read as JSON as it is, with no conversion. Every edit is applied by
- * JSON path on the parsed definition, and other properties of the document and of its metadata
- * are written back unchanged, so properties the editor does not know about survive a roundtrip.
+ * The storage decides how the document is kept: in DA it is a Structured Content document (HTML
+ * in DA's wire format, converted by the DA Structured Content SDK), in the browser it is JSON.
+ * Every edit is applied by JSON path on the parsed definition, and other properties of the
+ * document and of its metadata are written back unchanged.
  *
  * No DOM, network or host access here: the module is shared by the editor, the storage
  * implementations and the Node unit tests.
@@ -58,20 +58,26 @@ export function newFormDocument({ title } = {}) {
  */
 export function newFormPath(input, folder = '/forms/') {
   const slug = (text) => text.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
-  const raw = String(input || '').trim().replace(/\.json$/i, '');
+  const raw = String(input || '').trim().replace(/\.(json|html)$/i, '');
   const parts = raw.split('/').map((part) => part.trim()).filter(Boolean);
   if (!parts.length) return {};
   const title = parts[parts.length - 1];
   const segments = parts.map(slug);
   if (segments.some((segment) => !segment)) return {};
   const base = raw.includes('/') ? '/' : folder;
-  return { path: `${base}${segments.join('/')}.json`, title };
+  return { path: `${base}${segments.join('/')}`, title };
 }
 
-/** Normalizes a form document path to `/folder/name.json`. */
+/**
+ * Normalizes a form document path to `/folder/name`. Document paths have no extension; each
+ * storage maps them to its own files (`.html` in DA).
+ */
 export function toDocPath(path) {
-  const clean = `/${String(path || '').trim().replace(/^\/+/, '').replace(/\/+$/, '')}`;
-  return /\.json$/i.test(clean) ? clean : `${clean}.json`;
+  const clean = String(path || '').trim()
+    .replace(/^\/+/, '')
+    .replace(/\/+$/, '')
+    .replace(/\.(json|html)$/i, '');
+  return `/${clean}`;
 }
 
 /**
@@ -294,25 +300,6 @@ export function resolveComponent(item, mapping, componentIds) {
     .map((value) => rules.aliases?.[value] || value)
     .find((value) => componentIds.has(value));
   return id || null;
-}
-
-/** Evaluates the JSONLogic subset used by UE model field conditions. */
-export function evaluateCondition(condition, data) {
-  if (condition === null || typeof condition !== 'object' || Array.isArray(condition)) {
-    return condition;
-  }
-  const [op] = Object.keys(condition);
-  const args = [condition[op]].flat();
-  const val = (arg) => evaluateCondition(arg, data);
-  switch (op) {
-    case 'var': return getPath(data, String(args[0]));
-    case '===': case '==': return val(args[0]) === val(args[1]);
-    case '!==': case '!=': return val(args[0]) !== val(args[1]);
-    case 'and': return args.every((a) => val(a));
-    case 'or': return args.some((a) => val(a));
-    case '!': return !val(args[0]);
-    default: return true;
-  }
 }
 
 export function flattenFields(fields = []) {

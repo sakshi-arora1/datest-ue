@@ -15,25 +15,11 @@
  */
 
 /*
- * Pure helpers of the Forms Manager: which JSON documents are forms. A form document is a
- * Structured Content document ({ metadata, data }) whose metadata.schemaName is one of
- * FORM_SCHEMAS. No DOM or network access: the module is shared with the Node unit tests.
+ * Pure helpers of the Forms Manager. A form document is a Structured Content document whose
+ * schema is one of FORM_SCHEMAS (see editor/crispr.js describeForm). No DOM or network access:
+ * the module is shared with the Node unit tests.
  */
-import { FORM_SCHEMAS, describeForm } from '../formeditor/editor/crispr.js';
-
-export { FORM_SCHEMAS };
-
-/**
- * Describes a JSON document if it is a form or form fragment document, otherwise returns null
- * (spreadsheets, bare JSON and documents of other schemas).
- */
-export function describeFormDocument(text) {
-  try {
-    return describeForm(JSON.parse(text));
-  } catch {
-    return null;
-  }
-}
+export { FORM_SCHEMAS } from '../formeditor/editor/crispr.js';
 
 /** Runs `task` over `items` with at most `limit` running at a time, in order of `items`. */
 export async function mapWithLimit(items, limit, task) {

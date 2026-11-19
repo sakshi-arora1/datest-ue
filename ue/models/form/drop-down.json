@@ -594,14 +594,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "drop-down",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

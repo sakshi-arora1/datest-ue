@@ -155,8 +155,8 @@ class FormPickerApp extends LitElement {
       ${forms.map((form) => html`<li role="option" id="opt-${form.path}" aria-selected=${form.path === this._selected}
         class="option ${form.path === this._selected ? 'is-selected' : ''}"
         @click=${() => { this._selected = form.path; }} @dblclick=${() => { this._selected = form.path; this.insert(); }}>
-        <span class="title">${form.title || form.path.split('/').pop().replace(/\.json$/i, '')}</span>
-        <span class="path">${form.path.replace(/\.json$/i, '')} · ${form.fields} fields</span>
+        <span class="title">${form.title || form.path.split('/').pop()}</span>
+        <span class="path">${form.path} · ${form.fields} fields</span>
       </li>`)}
     </ul>`;
   }

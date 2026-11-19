@@ -39,8 +39,9 @@ export function assertImplements(contract, impl, provider = 'implementation') {
 }
 
 /**
- * Stores form documents. Paths are site-relative (`/forms/contact.json`); documents are plain
- * JSON objects in the Structured Content shape, { metadata: { schemaName }, data }.
+ * Stores form documents. Paths are site-relative and have no extension (`/forms/contact`); the
+ * storage maps them to its own files. Documents are plain JSON objects in the Structured Content
+ * shape, { metadata: { schemaName }, data }.
  *
  *   describe(): { label }                     where the forms are, shown to authors
  *   read(path): { document, canWrite } | null  null when there is no document at `path`

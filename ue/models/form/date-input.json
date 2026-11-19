@@ -610,14 +610,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "date-input",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

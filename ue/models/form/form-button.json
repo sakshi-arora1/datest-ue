@@ -297,14 +297,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "button",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

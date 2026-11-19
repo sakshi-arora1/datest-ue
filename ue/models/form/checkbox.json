@@ -455,15 +455,8 @@
                 },
                 "fieldType": "text-input",
                 "type": "string",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      {
-                        "var": "properties.enableUncheckedValue"
-                      },
-                      true
-                    ]
-                  }
+                "rules": {
+                  "visible": "properties_enableUncheckedValue.$value == true()"
                 }
               },
               {
@@ -559,14 +552,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "checkbox",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

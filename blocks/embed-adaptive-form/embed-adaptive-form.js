@@ -1,7 +1,9 @@
 import { loadCSS } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
+import { fetchStructuredContent } from '../form/structured-content.js';
 
-// a form document (/forms/contact.json) is rendered with the form block
+// a form document (a Structured Content form, /forms/contact, or /forms/contact.json) is rendered
+// with the form block
 async function loadFormDocument(href) {
   const base = window.hlx?.codeBasePath || '';
   const [{ default: decorateForm }] = await Promise.all([
@@ -30,7 +32,7 @@ export default function decorate(block) {
       if (!container) return;
       // get the pathname from the href
       const { pathname } = new URL(container.href);
-      if (pathname.endsWith('.json')) {
+      if (pathname.endsWith('.json') || await fetchStructuredContent(container.href)) {
         block.replaceChildren(await loadFormDocument(container.href));
         return;
       }

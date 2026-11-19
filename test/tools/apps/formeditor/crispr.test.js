@@ -3,8 +3,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  readFormDocument, writeFormDocument, newFormDocument, newFormPath, SCHEMA_NAME, setPath, getItem,
-  moveItem, insertItem, duplicateItem, createItem, resolveComponent, evaluateCondition,
+  readFormDocument, writeFormDocument, newFormDocument, newFormPath, toDocPath, SCHEMA_NAME,
+  setPath, getItem,
+  moveItem, insertItem, duplicateItem, createItem, resolveComponent,
 } from '../../../../tools/apps/formeditor/editor/crispr.js';
 
 const root = new URL('../../../../', import.meta.url);
@@ -64,11 +65,15 @@ test('creates new form documents', () => {
 });
 
 test('places new forms by name or by path', () => {
-  assert.deepEqual(newFormPath('Newsletter Signup'), { path: '/forms/newsletter-signup.json', title: 'Newsletter Signup' });
-  assert.deepEqual(newFormPath('/HR/Onboarding Form'), { path: '/hr/onboarding-form.json', title: 'Onboarding Form' });
-  assert.deepEqual(newFormPath('hr/onboarding.json'), { path: '/hr/onboarding.json', title: 'onboarding' });
-  assert.deepEqual(newFormPath('contact', '/'), { path: '/contact.json', title: 'contact' });
+  assert.deepEqual(newFormPath('Newsletter Signup'), { path: '/forms/newsletter-signup', title: 'Newsletter Signup' });
+  assert.deepEqual(newFormPath('/HR/Onboarding Form'), { path: '/hr/onboarding-form', title: 'Onboarding Form' });
+  assert.deepEqual(newFormPath('hr/onboarding.json'), { path: '/hr/onboarding', title: 'onboarding' });
+  assert.deepEqual(newFormPath('hr/onboarding.html'), { path: '/hr/onboarding', title: 'onboarding' });
+  assert.deepEqual(newFormPath('contact', '/'), { path: '/contact', title: 'contact' });
   assert.deepEqual(newFormPath('  '), {});
+  assert.equal(toDocPath('forms/contact/'), '/forms/contact');
+  assert.equal(toDocPath('/forms/contact.html'), '/forms/contact');
+  assert.equal(toDocPath('/forms/contact.json'), '/forms/contact');
   assert.deepEqual(newFormPath('/hr/***'), {});
 });
 
@@ -131,11 +136,4 @@ test('duplicates items with fresh names and without ids', () => {
   assert.equal(copy.name, 'panel2');
   assert.deepEqual(copy.items.map((i) => i.name), ['a1', 'b1']);
   assert.equal(form.items[1].name, 'panel1');
-});
-
-test('evaluates UE field conditions', () => {
-  assert.equal(evaluateCondition({ '===': [1, 0] }, {}), false);
-  const cond = { and: [{ '===': [{ var: 'properties.repeatable' }, true] }, { '!==': [{ var: 'properties.variant' }, 'noButtons'] }] };
-  assert.equal(evaluateCondition(cond, { properties: { repeatable: true } }), true);
-  assert.equal(evaluateCondition(cond, { properties: { repeatable: true, variant: 'noButtons' } }), false);
 });

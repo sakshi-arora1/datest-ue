@@ -396,14 +396,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "panel",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "minOccur",
@@ -414,32 +407,18 @@
                 "fieldType": "number-input",
                 "type": "number",
                 "default": 1,
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "_type",
-                "dataRef": "$[':type']",
+                "dataRef": "$.\":type\"",
                 "label": {
                   "value": ":type"
                 },
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "wizard",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

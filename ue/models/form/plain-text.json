@@ -256,14 +256,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "Text",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "fieldType",
@@ -274,14 +267,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "plain-text",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "properties_textIsRich",
@@ -296,14 +282,7 @@
                   false
                 ],
                 "default": true,
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

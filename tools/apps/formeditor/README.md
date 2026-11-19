@@ -1,6 +1,6 @@
 # Form Editor
 
-A standalone editor for Adaptive Forms stored as Structured Content JSON documents, and a DA app
+A standalone editor for Adaptive Forms stored as Structured Content documents, and a DA app
 built on it. It looks and works like the DA canvas editor: a header with Preview / Layout /
 Content / Split views, and a right panel with Blocks, Outline, and Block Inspector tabs. An
 assistant (DA's Coworker in the DA app) can be used next to it.
@@ -10,7 +10,7 @@ The editor (`editor/`) depends on no host. It reads and writes forms through a s
 
 | Entry | Storage | Assistant |
 | --- | --- | --- |
-| `formeditor.html`: DA app | DA site, through the DA source API (`providers/da/`) | DA's Coworker chat (`providers/da/`) |
+| `formeditor.html`: DA app | DA Structured Content documents of the site, through the DA source API and the DA Structured Content SDK (`providers/da/`) | DA's Coworker chat (`providers/da/`) |
 | `standalone.html`: no DA | This browser's `localStorage` (`providers/local/`) | None |
 
 ## Architecture
@@ -25,7 +25,7 @@ formeditor/
     preview.*            Preview view (the site's form block)
     tokens.css           design tokens for hosts without DA's styles
   providers/
-    da/                  DA implementations: storage (DA source API), assistant (Coworker)
+    da/                  DA implementations: storage (Structured Content documents), assistant (Coworker)
     local/               localStorage implementation of the storage
   formeditor.html/.js  DA app: registers the DA providers, mounts the editor
   standalone.html/.js  standalone: registers the localStorage provider, mounts the editor
@@ -39,8 +39,9 @@ starts, it asks the registry for each contract and gets the first registered imp
 that is available (`isAvailable()`), by `priority` and then by registration order. The editor
 checks that the implementation has every required method.
 
-**FormStorage** (required). Paths are site-relative, such as `/forms/contact.json`. Documents
-are plain JSON objects (`{ metadata, data }`).
+**FormStorage** (required). Paths are site-relative and have no extension, such as
+`/forms/contact`; each storage maps them to its own files. Documents are plain JSON objects
+(`{ metadata, data }`).
 
 | Method | Returns | Description |
 | --- | --- | --- |
@@ -87,6 +88,7 @@ these options:
 | --- | --- | --- |
 | `path` | the `path` query parameter | Form document to open; without it, the editor lists the forms |
 | `catalogUrl` | the site root | Folder URL of the `component-*.json` files |
+| `runtimeUrl` | the site's `blocks/form/rules/model/afb-runtime.min.js` | Adaptive Forms runtime that runs the Block Inspector sheets |
 | `previewUrl` | `editor/preview.html` | Preview page; `false` hides the Preview view |
 | `syncUrl` | `true` | Keep the open form in the `path` query parameter |
 | `registry` | the shared registry | Registry to resolve the contracts from |
@@ -103,10 +105,9 @@ page.
 
 ## How forms are stored
 
-Each form is a JSON document in DA, in any folder of the site, for example
-`/forms/contact.json`. It uses the Structured
-Content document shape: the document's `metadata` names its schema, and `data` holds the form
-definition (Crispr JSON).
+Each form is a Structured Content document, in any folder of the site, for example
+`/forms/contact`. Its JSON document names its schema in `metadata`, and `data` holds the form
+definition (Crispr JSON):
 
 ```json
 {
@@ -119,16 +120,20 @@ definition (Crispr JSON).
 }
 ```
 
-This is the JSON storage format agreed for Structured Content (RFC "JSON storage format for
-Structured Content", accepted 2026-11-05). The document is stored and read as JSON as it is, with
-no conversion to HTML. The storage decides where documents live. The DA storage
-(`providers/da/storage.js`) uses the DA source API (`admin.da.live`):
+The storage decides how documents are kept. In DA (`providers/da/storage.js`), a form is a
+[DA Structured Content](https://www.aem.live/docs/ew/administering/structured-content) document:
+`/forms/contact.html` in DA's wire format, whose `da-form` block holds the schema name
+(`x-schema-name`) and title, followed by one block per object of the form. The
+[DA Structured Content SDK](https://github.com/adobe/da-sc-sdk) converts it to and from the JSON
+document (`convertHtmlToJson`, `convertJsonToHtml`), as DA's own Structured Content editor does;
+the app loads the copy DA hosts (`https://da.live/nx/deps/da-sc-sdk/dist/index.js`).
 
 | Operation | Request |
 | --- | --- |
-| Read | `GET /source/{org}/{site}/{path}.json` |
-| Save | `POST /source/{org}/{site}/{path}.json` with the JSON document (`application/json`) |
-| List | `GET /list/{org}/{site}/...` (every `.json` file of the site, recursively; each is read to keep the form documents) |
+| Read | `GET /source/{org}/{site}/{path}.html`, converted to the JSON document |
+| Save | `POST /source/{org}/{site}/{path}.html` with the converted document (`text/html`) |
+| List | `GET /list/{org}/{site}/...` (every `.html` document of the site, recursively; each is read and kept when its `da-form` block names a form schema) |
+| Deliver | Preview or publish the document as any page; its JSON document is then served by the Structured Content delivery endpoint, `https://da-sc.adobeaem.workers.dev/{preview\|live}/{org}/{site}/{path}` |
 
 The editor:
 
@@ -138,17 +143,17 @@ The editor:
   and asks whether to load their version or keep yours.
 - creates new forms as `{ metadata: { schemaName: "adaptive-form", title }, data }`, at the path
   you type (`/hr/onboarding`), or in `/forms/` when you type only a name.
-- opens a bare Crispr JSON document too, and saves it in the document shape. It refuses
-  spreadsheets (`:type: sheet`) and other JSON.
+- refuses documents that are not Structured Content documents (ordinary pages, for example).
 
 Form fragments are documents of the same shape with `"schemaName": "adaptive-form-fragment"`;
 the editor opens them too and keeps their schema name. The
 [Forms Manager](../formsmanager/README.md) lists the forms and fragments of a site.
 
 To show a form on a page, insert it with the [Form Picker](../formpicker/README.md), which adds
-an Embed Adaptive Form block linking the document (for example `/forms/contact.json`). The
-block renders `data` with the form block (`blocks/form/form.js`), which also accepts such a
-link directly.
+an Embed Adaptive Form block linking the document (for example `/forms/contact`). The block reads
+the JSON document from the delivery endpoint (`blocks/form/structured-content.js`): the preview
+content on the site's `aem.page` host, the live content on `aem.live`. It renders `data` with
+the form block (`blocks/form/form.js`), which accepts such a link directly too.
 
 ## Views
 
@@ -181,15 +186,29 @@ to change what the Block Inspector shows for a component, edit its property form
 editor loads that file as it is.
 
 In a property form, every panel is a tab of the sheet, and every field is bound to the property
-it edits with `dataRef` (for example `$.properties['fd:submit'].actionName`). The Block
-Inspector draws the fields by `fieldType` (`text-input`, `multiline-input`, `number-input`,
-`date-input`, `checkbox`, `checkbox-group`, `drop-down`, `radio-group`) and uses `required`,
-`default`, `placeholder`, `description`, `enum`/`enumNames`, `pattern` and
-`constraintMessages.pattern`. Two hints have no Crispr property and are kept under `properties`:
-`fe:visibleWhen` (a JSONLogic condition on the item, such as
-`{ "===": [{ "var": "properties.repeatable" }, true] }`) and `fe:richText`. A unit test checks
-that every component has a valid property form and that `component-property-forms.json` is
-up to date. The palette and the properties therefore match what authors see in Universal Editor. Each item
+it edits with `dataRef`, in the runtime's syntax (names that are not identifiers are
+double-quoted: `$.properties."fd:submit".actionName`, `$.":type"`).
+
+The sheet runs in the Adaptive Forms runtime, the one the form block uses
+(`blocks/form/rules/model/afb-runtime.min.js`, option `runtimeUrl`). When an item is
+selected, the editor creates a runtime form from its property form, with a copy of the item as
+the data. The runtime then resolves:
+
+- the value of each field: the item's property, or the field's `default`;
+- which fields are shown: `visible`, and `rules.visible` (json-formula on the sibling fields,
+  for example `properties_repeatable.$value == true()`);
+- validation: `required`, `pattern`, `constraintMessages` and the other Crispr constraints, with
+  the runtime's messages.
+
+The editor draws the fields with its own controls, by `fieldType` (`text-input`,
+`multiline-input`, `number-input`, `date-input`, `checkbox`, `checkbox-group`, `drop-down`,
+`radio-group`). It writes an accepted value straight into the item, as one undo step, and keeps
+an invalid one out of the form. After each change it builds the sheet again from the item, so
+undo, redo and the other views stay in sync, and properties that no field binds are kept.
+`fe:richText` (under `properties`) keeps the white space around a value.
+
+Unit tests check that every component has a property form that runs in the runtime, with every
+field bound, and that `component-property-forms.json` is up to date. The palette and the properties therefore match what authors see in Universal Editor. Each item
 also has a JSON tab, which is the only editor for items that match no component.
 
 Undo/redo (header buttons, ⌘Z / ⇧⌘Z or ⌘Y, Ctrl on Windows) and save (⌘S) work across all
@@ -226,22 +245,22 @@ runtime dependencies. The editor itself (`editor/`) depends on no host; only the
 | Styles | Spectrum 2 design tokens as CSS custom properties (DA's nx2 styles in the DA app, `editor/tokens.css` standalone); the editor's own stylesheet adopted as a constructable stylesheet; plain CSS with grid, container queries and `light-dark()` | `editor/form-editor.css`, `editor/tokens.css` |
 | Icons | Inline SVG paths | `editor/icons.js` |
 | State | Lit reactive properties; the form is a plain JSON object, every edit is a deep copy (`structuredClone`) pushed on an undo stack (100 steps) | `editor/form-editor.js` |
-| Form model | Crispr (Adaptive Form JSON) with pure helpers: JSON paths, item tree operations, UE mapping rules, JSONLogic conditions | `editor/crispr.js` |
-| Document format | Structured Content JSON documents (`{ metadata, data }`), stored as they are | `editor/crispr.js` |
-| Persistence | A `FormStorage`: the DA source API (`admin.da.live`: `/source`, `/list`) through `daFetch`, which adds the IMS token; or the browser's `localStorage`, one JSON entry per document under a key prefix | `providers/da/`, `providers/local/` |
+| Form model | Crispr (Adaptive Form JSON) with pure helpers: JSON paths, item tree operations, UE mapping rules | `editor/crispr.js` |
+| Document format | Structured Content: the editor edits the JSON document (`{ metadata, data }`); DA stores it as a Structured Content document (DA wire-format HTML), converted with the DA Structured Content SDK (`@adobe/da-sc-sdk`, the copy DA hosts) | `editor/crispr.js`, `providers/da/structured-content.js` |
+| Persistence | A `FormStorage`: DA Structured Content documents through the DA source API (`admin.da.live`: `/source`, `/list`) and `daFetch`, which adds the IMS token; or the browser's `localStorage`, one JSON entry per document under a key prefix | `providers/da/`, `providers/local/` |
 | Component catalog | The site's Universal Editor configuration (`component-*.json`), fetched from the site (`catalogUrl`) | `editor/catalog.js` |
-| Property sheets | Crispr forms stored with the components (`ue/models/form/*.json`, merged into `component-property-forms.json` by `merge-json-cli`), bound with `dataRef` | `editor/catalog.js`, `editor/form-editor.js` |
+| Property sheets | Crispr forms stored with the components (`ue/models/form/*.json`, merged into `component-property-forms.json` by `merge-json-cli`), bound with `dataRef`, run in the site's Adaptive Forms runtime (`afb-runtime`: values, `visible` rules, validation) and drawn with the editor's controls | `editor/property-form.js`, `editor/form-editor.js` |
 | Drag and drop | Native HTML5 drag and drop | `editor/form-editor.js` |
 | Preview | The site's own form block (`blocks/form`) and its rule engine (web worker), in a same-origin iframe, talking to the editor with `postMessage` (`previewUrl`) | `editor/preview.*` |
 | Assistant | An `Assistant`: in the DA app, the DA shell chat panel (Experience Workspace chat), driven through the SDK; none standalone | `providers/da/assistant.js` |
-| Tests | `node:test` and `node:assert`, run with Node 20 (`npm test`): the form model, property forms, contracts and registry, and the localStorage provider (against an in-memory Storage) | `test/tools/apps/formeditor/` |
+| Tests | `node:test` and `node:assert`, run with Node 20 (`npm test`): the form model, property forms, contracts and registry, the localStorage provider (against an in-memory Storage), and the Structured Content conversion (with the SDK's npm package, a dev dependency) | `test/tools/apps/formeditor/` |
 | Linting | ESLint (`airbnb-base`) and Stylelint (`stylelint-config-standard`), as in the rest of the repo | `.eslintrc.js`, `.stylelintrc.json` |
 
 What each entry loads from outside the site:
 
 | Entry | Loads |
 | --- | --- |
-| `formeditor.html` (DA app) | Lit from DA (`https://da.live/deps/lit/dist/index.js`); the DA App SDK (`https://da.live/nx/utils/sdk.js`); DA's styles and color scheme (`https://da.live/nx2/`); `daFetch` and the DA admin endpoint (`https://da.live/nx/`); the DA source API (`https://admin.da.live`) |
+| `formeditor.html` (DA app) | Lit from DA (`https://da.live/deps/lit/dist/index.js`); the DA App SDK (`https://da.live/nx/utils/sdk.js`); DA's styles and color scheme (`https://da.live/nx2/`); `daFetch` and the DA admin endpoint (`https://da.live/nx/`); the DA Structured Content SDK (`https://da.live/nx/deps/da-sc-sdk/`); the DA source API (`https://admin.da.live`) |
 | `standalone.html` | Lit 3.3.3 from jsDelivr (`https://cdn.jsdelivr.net/npm/lit@3.3.3/+esm`) |
 
 To run the standalone editor without any CDN, map `lit` to a copy served by the site.
@@ -264,7 +283,7 @@ Register the app in the site's DA config sheet, **apps** tab:
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| `path` | No | Form document to open, for example `/forms/contact` (`.json` is added). Without it, the app lists the form and fragment documents of the whole site and can create a new form. |
+| `path` | No | Form document to open, for example `/forms/contact`. Without it, the app lists the form and fragment documents of the whole site and can create a new form. |
 
 The app must run from the site (`/app/{org}/{site}/...`) because the component catalog and the
 Preview view are loaded from the site's own code and configuration. The chat panel is offered
@@ -282,10 +301,11 @@ only to site apps.
 | `editor/contract.js` | The `FormStorage` and `Assistant` contracts and the registry |
 | `editor/crispr.js` | Pure helpers: form documents, JSON paths, item tree operations, UE catalog rules |
 | `editor/catalog.js` | Loads the UE configuration as the component catalog |
-| `editor/property-form.js` | Reads the property path of a `dataRef` |
+| `editor/property-form.js` | Loads the form runtime; runs a property sheet in it; reads the property path of a `dataRef` |
 | `editor/preview.html`, `.js`, `.css` | Preview view: renders the form with `blocks/form` |
 | `editor/icons.js` | Icons |
-| `providers/da/storage.js` | `FormStorage` on a DA site |
+| `providers/da/storage.js` | `FormStorage` on the Structured Content documents of a DA site |
+| `providers/da/structured-content.js` | Reads and writes DA Structured Content documents with the DA Structured Content SDK |
 | `providers/da/assistant.js` | `Assistant` on DA's Coworker |
 | `providers/da/api.js` | Authenticated DA source read, save, and listing (also used by the Forms Manager and Form Picker) |
 | `providers/local/storage.js` | `FormStorage` in `localStorage` |
@@ -296,14 +316,16 @@ and the localStorage provider.
 ## Limitations
 
 - The Layout view shows the form structure, not its final rendering; use Preview for that.
-- Edge Delivery Services does not preview or publish JSON documents yet: today it accepts JSON
-  only as spreadsheets. The EDS team agreed to support JSON documents
-  ("Alignment with Edge Delivery Services: JSON documents for Structured Content"); until then
-  a page cannot load a form document from `aem.page` or `aem.live`. The editor and its Preview
-  view work without it.
-- The documents have no `$schema` property yet: how EDS will tell JSON documents from sheets is
-  still open, and a top-level `$schema` is one suggestion.
-- DA's Structured Content editor (`da.live/form`) reads the HTML format today, so it does not
-  open these documents.
+- The Structured Content wire format keeps values as text. Reading a document back, the SDK
+  turns text that is exactly a number or `true`/`false` into that type (`"12"` becomes `12`),
+  and saving skips empty values (`""`, `[]`, `{}`, `null`). Strings such as enum values
+  `"1"`…`"5"` therefore come back as numbers.
+- `metadata` and `section-metadata` are reserved in Structured Content: the delivery endpoint
+  serves a Crispr `data.metadata` object (`grammar`, `version`) as `{}`. The form runtime
+  works without it.
+- The delivery endpoint is found from the `<ref>--<site>--<org>.aem.page|live` host name. On
+  other hosts (local development, a custom domain), link the delivery endpoint URL itself.
+- The site has no `adaptive-form` schema in `.da/forms/schemas/`, so DA's Structured Content
+  editor (`da.live/form`) does not open the forms; the Form Editor edits them.
 - Forms in older pages, as a Form block with the JSON in `<pre><code>`, are not edited by this
   app; Universal Editor on DA still edits them.

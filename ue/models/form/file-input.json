@@ -561,14 +561,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "file-input",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "type",
@@ -579,14 +572,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "file",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

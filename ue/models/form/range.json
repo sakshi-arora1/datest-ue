@@ -548,32 +548,18 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "number-input",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "_type",
-                "dataRef": "$[':type']",
+                "dataRef": "$.\":type\"",
                 "label": {
                   "value": ":type"
                 },
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "range",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }
