@@ -3,9 +3,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  readForm, writeForm, findFormBlocks, newFormDocument, appendFormSection, setPath, getItem,
+  readFormDocument, writeFormDocument, newFormDocument, newFormPath, SCHEMA_NAME, setPath, getItem,
   moveItem, insertItem, duplicateItem, createItem, resolveComponent, evaluateCondition,
-} from '../../../../tools/apps/formeditor/crispr.js';
+} from '../../../../tools/apps/formeditor/editor/crispr.js';
 
 const root = new URL('../../../../', import.meta.url);
 const json = (name) => JSON.parse(readFileSync(new URL(name, root), 'utf8'));
@@ -27,49 +27,49 @@ const definition = {
   ],
 };
 
-const escape = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const doc = (code) => `<body><header></header><main><div><h1>Hi &amp; welcome</h1></div><div><div class="form"><div><div><pre><code>${code}</code></pre></div></div></div><p>after</p></div></main><footer></footer></body>`;
-
-test('reads a form block and writes it back changing only the code element', () => {
-  const html = doc(escape(JSON.stringify(definition)));
-  const { count, definition: parsed, encoding } = readForm(html);
-  assert.equal(count, 1);
-  assert.equal(encoding, 'json');
+test('reads and writes Structured Content form documents without changing other data', () => {
+  const stored = {
+    metadata: { schemaName: SCHEMA_NAME, title: 'Contact', owner: 'x' },
+    'x-extra': [1, null],
+    data: definition,
+  };
+  const { document, definition: parsed } = readFormDocument(JSON.stringify(stored));
   assert.deepEqual(parsed, definition);
+  assert.deepEqual(document, { metadata: stored.metadata, 'x-extra': [1, null] });
 
   parsed.items[0].label.value = 'Full name';
-  const saved = writeForm(html, parsed, { encoding });
-  const block = findFormBlocks(saved)[0];
-  assert.equal(saved.slice(0, block.start), html.slice(0, findFormBlocks(html)[0].start));
-  assert.ok(saved.endsWith('</code></pre></div></div></div><p>after</p></div></main><footer></footer></body>'));
-  const reread = readForm(saved).definition;
-  assert.equal(reread.items[0].label.value, 'Full name');
-  assert.deepEqual(reread['fd:custom'], definition['fd:custom']);
-  assert.equal(reread.items[0]['x-unknown'], 1);
-  assert.equal(reread.title, 'Contact <us>');
+  const reread = JSON.parse(writeFormDocument(document, parsed));
+  assert.deepEqual(reread.metadata, stored.metadata);
+  assert.deepEqual(reread['x-extra'], [1, null]);
+  assert.equal(reread.data.items[0].label.value, 'Full name');
+  assert.deepEqual(reread.data['fd:custom'], definition['fd:custom']);
+  assert.equal(reread.data.items[0]['x-unknown'], 1);
+  assert.equal(reread.data.title, 'Contact <us>');
 });
 
-test('keeps the double encoded (JSON string) storage format', () => {
-  const html = doc(escape(JSON.stringify(JSON.stringify(definition))));
-  const { definition: parsed, encoding } = readForm(html);
-  assert.equal(encoding, 'string');
-  const saved = writeForm(html, parsed, { encoding });
-  assert.equal(saved, html);
+test('accepts bare Crispr JSON and rejects other JSON', () => {
+  const { document, definition: parsed } = readFormDocument(JSON.stringify(definition));
+  assert.deepEqual(parsed, definition);
+  assert.equal(JSON.parse(writeFormDocument(document, parsed)).metadata.schemaName, SCHEMA_NAME);
+  assert.throws(() => readFormDocument('{"total":1,":type":"sheet","data":[]}'), /spreadsheet/);
+  assert.throws(() => readFormDocument('{"hello":1}'), /not a form document/);
+  assert.throws(() => readFormDocument('<html>'), /not valid JSON/);
 });
 
-test('handles documents with several or no form blocks', () => {
-  const two = doc(escape('{"items":[]}')).replace('<p>after</p>', '<div class="form"><div><div><pre><code>{"title":"2nd"}</code></pre></div></div></div>');
-  assert.equal(readForm(two, 1).definition.title, '2nd');
-  const updated = writeForm(two, { title: 'second' }, { index: 1 });
-  assert.equal(readForm(updated, 0).definition.items.length, 0);
-  assert.equal(readForm(updated, 1).definition.title, 'second');
+test('creates new form documents', () => {
+  const doc = newFormDocument({ title: 'Newsletter' });
+  assert.deepEqual(doc.metadata, { schemaName: SCHEMA_NAME, title: 'Newsletter' });
+  assert.deepEqual(doc.data.items, []);
+  assert.equal(doc.data.title, 'Newsletter');
+});
 
-  const none = '<body><header></header><main><div><p>x</p></div></main><footer></footer></body>';
-  assert.equal(readForm(none).count, 0);
-  const added = appendFormSection(none);
-  assert.equal(readForm(added).definition.adaptiveform, '0.10.0');
-  assert.ok(added.startsWith('<body><header></header><main><div><p>x</p></div><div><div class="form">'));
-  assert.deepEqual(readForm(newFormDocument()).definition.items, []);
+test('places new forms by name or by path', () => {
+  assert.deepEqual(newFormPath('Newsletter Signup'), { path: '/forms/newsletter-signup.json', title: 'Newsletter Signup' });
+  assert.deepEqual(newFormPath('/HR/Onboarding Form'), { path: '/hr/onboarding-form.json', title: 'Onboarding Form' });
+  assert.deepEqual(newFormPath('hr/onboarding.json'), { path: '/hr/onboarding.json', title: 'onboarding' });
+  assert.deepEqual(newFormPath('contact', '/'), { path: '/contact.json', title: 'contact' });
+  assert.deepEqual(newFormPath('  '), {});
+  assert.deepEqual(newFormPath('/hr/***'), {});
 });
 
 test('setPath creates and prunes nested properties', () => {

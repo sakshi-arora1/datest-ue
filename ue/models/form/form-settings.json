@@ -71,5 +71,118 @@
       ]
     }
   ],
-  "filters": []
+  "filters": [],
+  "propertyForms": [
+    {
+      "id": "form-settings",
+      "form": {
+        "adaptiveform": "0.10.0",
+        "metadata": {
+          "grammar": "json-formula-1.0.0",
+          "version": "1.0.0"
+        },
+        "title": "form-settings properties",
+        "properties": {
+          "fe:model": "form-settings"
+        },
+        "items": [
+          {
+            "name": "basic",
+            "fieldType": "panel",
+            "label": {
+              "value": "Basic"
+            },
+            "items": [
+              {
+                "name": "title",
+                "dataRef": "$.title",
+                "label": {
+                  "value": "Title"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "submission",
+            "fieldType": "panel",
+            "label": {
+              "value": "Submission"
+            },
+            "items": [
+              {
+                "name": "properties_fd_submit_actionName",
+                "dataRef": "$.properties['fd:submit'].actionName",
+                "label": {
+                  "value": "Submit action"
+                },
+                "fieldType": "drop-down",
+                "type": "string",
+                "enum": [
+                  "spreadsheet",
+                  "rest"
+                ],
+                "enumNames": [
+                  "Forms Submission Service (spreadsheet)",
+                  "REST endpoint"
+                ],
+                "description": "Forms Submission Service uses the submission configuration sheet; a REST endpoint receives submissions at the Submit URL."
+              },
+              {
+                "name": "properties_fd_submit_configUrl",
+                "dataRef": "$.properties['fd:submit'].configUrl",
+                "label": {
+                  "value": "Submission configuration sheet"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "description": "Path of a published sheet of this site (e.g. /forms/contact-submit) with a 'default' sheet holding the Submit row (Action pointing to the sheet itself) and submit-action-spreadsheet / submit-action-email sheets."
+              },
+              {
+                "name": "action",
+                "dataRef": "$.action",
+                "label": {
+                  "value": "Submit URL"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "description": "Endpoint that receives the submission when the submit action is REST endpoint."
+              }
+            ]
+          },
+          {
+            "name": "confirmation",
+            "fieldType": "panel",
+            "label": {
+              "value": "After submit"
+            },
+            "items": [
+              {
+                "name": "thankYouMsg",
+                "dataRef": "$.thankYouMsg",
+                "label": {
+                  "value": "Thank you message"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "redirectUrl",
+                "dataRef": "$.redirectUrl",
+                "label": {
+                  "value": "Redirect URL"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

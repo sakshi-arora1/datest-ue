@@ -22,27 +22,32 @@
  * - component-models.json:     properties of each component, named by JSON path
  * - component-json-mappings.json: how a form item resolves to a component, new item defaults
  *
- * The property sheet of each component is a Crispr form generated from its model
- * (property-form.js), which the Block Inspector draws.
+ * - component-property-forms.json: the property sheet of each component as a Crispr form, stored
+ *   with the component (ue/models/form/<component>.json, "propertyForms") and drawn by the
+ *   Block Inspector as it is
  */
 import { resolveComponent } from './crispr.js';
-import { modelToPropertyForm } from './property-form.js';
 
 const FORM_GROUP = 'form-components';
 const FORM_BLOCK = 'form';
 
-async function fetchJson(name) {
-  const resp = await fetch(new URL(`/${name}`, window.location.origin));
+async function fetchJson(name, baseUrl) {
+  const resp = await fetch(new URL(name, baseUrl));
   if (!resp.ok) throw new Error(`Unable to load ${name} (HTTP ${resp.status}).`);
   return resp.json();
 }
 
-export default async function loadCatalog() {
-  const [definition, models, filters, mappings] = await Promise.all([
-    fetchJson('component-definition.json'),
-    fetchJson('component-models.json'),
-    fetchJson('component-filters.json'),
-    fetchJson('component-json-mappings.json'),
+/**
+ * Loads the component catalog from `baseUrl` (a folder URL holding the component-*.json files,
+ * by default the root of the site serving the page).
+ */
+export default async function loadCatalog(baseUrl = new URL('/', window.location.href)) {
+  const [definition, models, filters, mappings, propertyForms] = await Promise.all([
+    fetchJson('component-definition.json', baseUrl),
+    fetchJson('component-models.json', baseUrl),
+    fetchJson('component-filters.json', baseUrl),
+    fetchJson('component-json-mappings.json', baseUrl),
+    fetchJson('component-property-forms.json', baseUrl),
   ]);
   const mapping = mappings.find((m) => m.block === FORM_BLOCK) || {};
   const group = definition.groups.find((g) => g.id === FORM_GROUP)?.components || [];
@@ -56,12 +61,8 @@ export default async function loadCatalog() {
   }));
   const componentIds = new Set(byId.keys());
   const rootModel = models.find((m) => m.id === mapping.root);
-  const propertyForms = new Map();
-  const propertyForm = (model) => {
-    if (!model) return null;
-    if (!propertyForms.has(model.id)) propertyForms.set(model.id, modelToPropertyForm(model));
-    return propertyForms.get(model.id);
-  };
+  const forms = new Map(propertyForms.map(({ id, form }) => [id, form]));
+  const propertyForm = (model) => (model ? forms.get(model.id) || null : null);
   return {
     components,
     models,

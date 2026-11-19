@@ -1227,6 +1227,10 @@ textarea.code {
 }
 
 .doc-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
   width: 100%;
   padding: 8px 12px;
   border: none;
@@ -1234,6 +1238,11 @@ textarea.code {
   background: none;
   cursor: pointer;
   text-align: left;
+}
+
+.doc-meta {
+  color: var(--s2-gray-600);
+  font-size: 12px;
 }
 
 .doc-item:hover {

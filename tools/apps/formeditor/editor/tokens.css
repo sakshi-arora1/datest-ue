@@ -1,0 +1,47 @@
+/*
+ * Design tokens for the standalone Form Editor: the Spectrum 2 variables its styles use. A host
+ * that already provides them (DA's nx2 styles) does not load this file.
+ */
+:root {
+  color-scheme: light dark;
+
+  --s2-font-family: 'Adobe Clean', adobe-clean, 'Source Sans Pro', -apple-system, 'Segoe UI', sans-serif;
+  --s2-body-size-xs: 12px;
+  --s2-body-size-s: 14px;
+  --s2-corner-radius-400: 7px;
+  --s2-component-s-medium-font-weight: 500;
+  --s2-blue-1000: light-dark(rgb(39 77 234), rgb(105 149 254));
+  --s2-blue-100: light-dark(rgb(245 249 255), rgb(14 23 63));
+  --s2-blue-900: light-dark(rgb(59 99 251), rgb(86 129 255));
+  --s2-gray-100: light-dark(rgb(233 233 233), rgb(44 44 44));
+  --s2-gray-200: light-dark(rgb(225 225 225), rgb(50 50 50));
+  --s2-gray-25: light-dark(rgb(255 255 255), rgb(17 17 17));
+  --s2-gray-300: light-dark(rgb(218 218 218), rgb(57 57 57));
+  --s2-gray-400: light-dark(rgb(198 198 198), rgb(68 68 68));
+  --s2-gray-500: light-dark(rgb(143 143 143), rgb(109 109 109));
+  --s2-gray-50: light-dark(rgb(248 248 248), rgb(27 27 27));
+  --s2-gray-600: light-dark(rgb(113 113 113), rgb(138 138 138));
+  --s2-gray-700: light-dark(rgb(80 80 80), rgb(175 175 175));
+  --s2-gray-75: light-dark(rgb(243 243 243), rgb(34 34 34));
+  --s2-gray-800: light-dark(rgb(41 41 41), rgb(219 219 219));
+  --s2-gray-900: light-dark(rgb(19 19 19), rgb(242 242 242));
+  --s2-green-1000: light-dark(rgb(3 110 69), rgb(14 175 98));
+  --s2-green-100: light-dark(rgb(237 252 241), rgb(0 30 23));
+  --s2-orange-100: light-dark(rgb(255 246 231), rgb(49 16 0));
+  --s2-orange-900: light-dark(rgb(194 78 0), rgb(224 100 0));
+  --s2-purple-1000: light-dark(rgb(134 40 217), rgb(186 127 237));
+  --s2-purple-100: light-dark(rgb(251 247 254), rgb(41 0 79));
+  --s2-red-100: light-dark(rgb(255 246 245), rgb(54 10 3));
+  --s2-red-900: light-dark(rgb(215 50 32), rgb(252 67 46));
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: light-dark(#fff, #111);
+  font-family: var(--s2-font-family);
+}

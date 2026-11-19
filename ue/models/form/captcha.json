@@ -64,5 +64,100 @@
       ]
     }
   ],
-  "filters": []
+  "filters": [],
+  "propertyForms": [
+    {
+      "id": "captcha",
+      "form": {
+        "adaptiveform": "0.10.0",
+        "metadata": {
+          "grammar": "json-formula-1.0.0",
+          "version": "1.0.0"
+        },
+        "title": "captcha properties",
+        "properties": {
+          "fe:model": "captcha"
+        },
+        "items": [
+          {
+            "name": "basic",
+            "fieldType": "panel",
+            "label": {
+              "value": "Basic"
+            },
+            "items": [
+              {
+                "name": "name",
+                "dataRef": "$.name",
+                "label": {
+                  "value": "Name"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "required": true
+              },
+              {
+                "name": "label_value",
+                "dataRef": "$.label.value",
+                "label": {
+                  "value": "label.value"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "Captcha (Invisible)",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "fieldType",
+                "dataRef": "$.fieldType",
+                "label": {
+                  "value": "fieldType"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "captcha",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "required",
+                "dataRef": "$.required",
+                "label": {
+                  "value": "required"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true,
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

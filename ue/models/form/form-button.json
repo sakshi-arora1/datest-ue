@@ -143,5 +143,173 @@
       ]
     }
   ],
-  "filters": []
+  "filters": [],
+  "propertyForms": [
+    {
+      "id": "form-button",
+      "form": {
+        "adaptiveform": "0.10.0",
+        "metadata": {
+          "grammar": "json-formula-1.0.0",
+          "version": "1.0.0"
+        },
+        "title": "form-button properties",
+        "properties": {
+          "fe:model": "form-button"
+        },
+        "items": [
+          {
+            "name": "basic",
+            "fieldType": "panel",
+            "label": {
+              "value": "Basic"
+            },
+            "items": [
+              {
+                "name": "name",
+                "dataRef": "$.name",
+                "label": {
+                  "value": "Name"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "required": true,
+                "pattern": "^(?!\\$)[A-Za-z0-9_]+$",
+                "constraintMessages": {
+                  "pattern": "Name must only contain letters, numbers, or underscores and cannot start with $"
+                }
+              },
+              {
+                "name": "label_value",
+                "dataRef": "$.label.value",
+                "label": {
+                  "value": "Title"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "Button"
+              },
+              {
+                "name": "visible",
+                "dataRef": "$.visible",
+                "label": {
+                  "value": "Show Component"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true
+              },
+              {
+                "name": "enabled",
+                "dataRef": "$.enabled",
+                "label": {
+                  "value": "Enable Component"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true
+              },
+              {
+                "name": "properties_colspan",
+                "dataRef": "$.properties.colspan",
+                "label": {
+                  "value": "Column Span"
+                },
+                "fieldType": "drop-down",
+                "type": "string",
+                "enum": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "7",
+                  "8",
+                  "9",
+                  "10",
+                  "11",
+                  "12"
+                ],
+                "enumNames": [
+                  "1 column",
+                  "2 column",
+                  "3 column",
+                  "4 column",
+                  "5 column",
+                  "6 column",
+                  "7 column",
+                  "8 column",
+                  "9 column",
+                  "10 column",
+                  "11 column",
+                  "12 column"
+                ],
+                "default": "12"
+              }
+            ]
+          },
+          {
+            "name": "help",
+            "fieldType": "panel",
+            "label": {
+              "value": "Help Content"
+            },
+            "items": [
+              {
+                "name": "description",
+                "dataRef": "$.description",
+                "label": {
+                  "value": "Help text"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "tooltip",
+                "dataRef": "$.tooltip",
+                "label": {
+                  "value": "Short description"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "fieldType",
+                "dataRef": "$.fieldType",
+                "label": {
+                  "value": "fieldType"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "button",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

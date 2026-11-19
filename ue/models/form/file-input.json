@@ -251,5 +251,347 @@
       ]
     }
   ],
-  "filters": []
+  "filters": [],
+  "propertyForms": [
+    {
+      "id": "file-input",
+      "form": {
+        "adaptiveform": "0.10.0",
+        "metadata": {
+          "grammar": "json-formula-1.0.0",
+          "version": "1.0.0"
+        },
+        "title": "file-input properties",
+        "properties": {
+          "fe:model": "file-input"
+        },
+        "items": [
+          {
+            "name": "basic",
+            "fieldType": "panel",
+            "label": {
+              "value": "Basic"
+            },
+            "items": [
+              {
+                "name": "name",
+                "dataRef": "$.name",
+                "label": {
+                  "value": "Name"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "required": true,
+                "pattern": "^[^$].*",
+                "constraintMessages": {
+                  "pattern": "Name cannot start with $"
+                }
+              },
+              {
+                "name": "label_value",
+                "dataRef": "$.label.value",
+                "label": {
+                  "value": "Title"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "File Attachment"
+              },
+              {
+                "name": "properties_hideTitle",
+                "dataRef": "$.properties.hideTitle",
+                "label": {
+                  "value": "Hide title"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "dataRef",
+                "dataRef": "$.dataRef",
+                "label": {
+                  "value": "Bind reference"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              },
+              {
+                "name": "properties_unboundFormElement",
+                "dataRef": "$.properties.unboundFormElement",
+                "label": {
+                  "value": "Mark as Unbound Form Element"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "visible",
+                "dataRef": "$.visible",
+                "label": {
+                  "value": "Show Component"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true
+              },
+              {
+                "name": "enabled",
+                "dataRef": "$.enabled",
+                "label": {
+                  "value": "Enable Component"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true
+              },
+              {
+                "name": "readOnly",
+                "dataRef": "$.readOnly",
+                "label": {
+                  "value": "Read-only"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "properties_colspan",
+                "dataRef": "$.properties.colspan",
+                "label": {
+                  "value": "Column Span"
+                },
+                "fieldType": "drop-down",
+                "type": "string",
+                "enum": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "7",
+                  "8",
+                  "9",
+                  "10",
+                  "11",
+                  "12"
+                ],
+                "enumNames": [
+                  "1 column",
+                  "2 column",
+                  "3 column",
+                  "4 column",
+                  "5 column",
+                  "6 column",
+                  "7 column",
+                  "8 column",
+                  "9 column",
+                  "10 column",
+                  "11 column",
+                  "12 column"
+                ],
+                "default": "12"
+              },
+              {
+                "name": "properties_buttonText",
+                "dataRef": "$.properties.buttonText",
+                "label": {
+                  "value": "Button Title"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "Attach"
+              },
+              {
+                "name": "properties_dragDropText",
+                "dataRef": "$.properties.dragDropText",
+                "label": {
+                  "value": "Drag Drop Text"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "default": "Drag and Drop To Upload",
+                "properties": {
+                  "fe:richText": true
+                }
+              }
+            ]
+          },
+          {
+            "name": "validation",
+            "fieldType": "panel",
+            "label": {
+              "value": "Validation"
+            },
+            "items": [
+              {
+                "name": "required",
+                "dataRef": "$.required",
+                "label": {
+                  "value": "Required"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "constraintMessages_required",
+                "dataRef": "$.constraintMessages.required",
+                "label": {
+                  "value": "Error message"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "description": "Error message shown when required field is left empty."
+              },
+              {
+                "name": "constraintMessages_validationExpression",
+                "dataRef": "$.constraintMessages.validationExpression",
+                "label": {
+                  "value": "Script validation message"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "description": "Displayed when validation script fails."
+              },
+              {
+                "name": "maxFileSize",
+                "dataRef": "$.maxFileSize",
+                "label": {
+                  "value": "Maximum file size (MB)"
+                },
+                "fieldType": "number-input",
+                "type": "string"
+              },
+              {
+                "name": "constraintMessages_maxFileSize",
+                "dataRef": "$.constraintMessages.maxFileSize",
+                "label": {
+                  "value": "Maximum file size error message"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              },
+              {
+                "name": "accept",
+                "dataRef": "$.accept",
+                "label": {
+                  "value": "Allowed file types"
+                },
+                "fieldType": "multiline-input",
+                "type": "string[]",
+                "default": [
+                  "audio/*",
+                  "video/*",
+                  "image/*",
+                  "text/*",
+                  "application/pdf"
+                ]
+              },
+              {
+                "name": "constraintMessages_accept",
+                "dataRef": "$.constraintMessages.accept",
+                "label": {
+                  "value": "File type error message"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "help",
+            "fieldType": "panel",
+            "label": {
+              "value": "Help Content"
+            },
+            "items": [
+              {
+                "name": "description",
+                "dataRef": "$.description",
+                "label": {
+                  "value": "Help text"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "tooltip",
+                "dataRef": "$.tooltip",
+                "label": {
+                  "value": "Short description"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "fieldType",
+                "dataRef": "$.fieldType",
+                "label": {
+                  "value": "fieldType"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "file-input",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "type",
+                "dataRef": "$.type",
+                "label": {
+                  "value": "type"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "file",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

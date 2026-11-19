@@ -21,7 +21,7 @@
  * that the rule engine starts fresh. Submitting is blocked: requests other than GET are not sent,
  * and get an empty success response so the form's after-submit behaviour can be previewed.
  */
-import '../../../scripts/aem.js';
+import '../../../../scripts/aem.js';
 
 const block = document.querySelector('.form.block');
 
@@ -36,7 +36,7 @@ async function render(definition) {
   pre.append(code);
   block.replaceChildren(pre);
   try {
-    const { default: decorate } = await import('../../../blocks/form/form.js');
+    const { default: decorate } = await import('../../../../blocks/form/form.js');
     await decorate(block);
   } catch (error) {
     block.replaceChildren(note(`The form cannot be previewed: ${error.message}`, 'fe-preview-error'));

@@ -15,15 +15,22 @@
  */
 
 /*
- * Pure helpers for Crispr (Adaptive Form JSON) definitions stored in DA documents.
+ * Pure helpers for Crispr (Adaptive Form JSON) definitions stored as Structured Content documents.
  *
- * A form lives in a document as a `form` block whose cell holds the JSON in <pre><code>
- * (see ue/models/blocks/form.json and blocks/form/form.js). Everything outside that <code>
- * element is kept byte for byte, and every edit is applied by JSON path on the parsed
- * definition, so properties the editor does not know about survive a load/save roundtrip.
+ * A form is a JSON document in DA (for example /forms/contact.json) in the Structured Content
+ * document shape, as agreed in the SC "JSON storage format" RFC:
  *
- * No DOM or network access here: the module is shared by the app and the Node unit tests.
+ *   { "metadata": { "schemaName": "adaptive-form", ... }, "data": { ...Crispr form... } }
+ *
+ * The document is stored and read as JSON as it is, with no conversion. Every edit is applied by
+ * JSON path on the parsed definition, and other properties of the document and of its metadata
+ * are written back unchanged, so properties the editor does not know about survive a roundtrip.
+ *
+ * No DOM, network or host access here: the module is shared by the editor, the storage
+ * implementations and the Node unit tests.
  */
+
+export const SCHEMA_NAME = 'adaptive-form';
 
 export const NEW_FORM_JSON = {
   adaptiveform: '0.10.0',
@@ -31,95 +38,109 @@ export const NEW_FORM_JSON = {
   items: [],
 };
 
-const FORM_BLOCK_RE = /<div\s+class="form(?:\s[^"]*)?"\s*>/gi;
-const CODE_RE = /<pre[^>]*>\s*<code[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/i;
-const NAMED_ENTITIES = {
-  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0',
-};
+const isObject = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
 
-export function decodeHtml(text) {
-  return text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, entity) => {
-    if (entity[0] === '#') {
-      const code = entity[1].toLowerCase() === 'x'
-        ? parseInt(entity.slice(2), 16) : parseInt(entity.slice(1), 10);
-      return Number.isNaN(code) ? match : String.fromCodePoint(code);
-    }
-    return NAMED_ENTITIES[entity.toLowerCase()] ?? match;
-  });
+/** Compact serialization of a definition, used to compare versions. */
+export function encodeDefinition(definition) {
+  return JSON.stringify(definition);
 }
 
-export function encodeHtml(text) {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-/** Finds the <code> content range of every form block of a DA document. */
-export function findFormBlocks(html) {
-  const starts = [...html.matchAll(FORM_BLOCK_RE)];
-  return starts.flatMap((match, i) => {
-    const from = match.index + match[0].length;
-    const end = i + 1 < starts.length ? starts[i + 1].index : html.length;
-    const code = CODE_RE.exec(html.slice(from, end));
-    if (!code) return [];
-    const openTagEnd = code[0].indexOf('>', code[0].search(/<code/i)) + 1;
-    const start = from + code.index + openTagEnd;
-    return [{ start, end: start + code[1].length, raw: decodeHtml(code[1]) }];
-  });
+/** A new Structured Content document holding an empty form. */
+export function newFormDocument({ title } = {}) {
+  const data = structuredClone(NEW_FORM_JSON);
+  if (title) data.title = title;
+  return { metadata: { schemaName: SCHEMA_NAME, ...(title ? { title } : {}) }, data };
 }
 
 /**
- * Parses the code content like blocks/form/form.js does. `encoding` is 'string' when the JSON
- * is stored as a JSON string literal (double encoded) so that it is written back the same way.
+ * The path and title of a new form typed as a name ("Newsletter Signup", created in `folder`)
+ * or as a path ("/hr/onboarding", in any folder). Returns `{}` when nothing usable is typed.
  */
-export function decodeDefinition(raw) {
-  const content = raw.trim();
-  if (content.startsWith('"') && content.endsWith('"')) {
-    return { definition: JSON.parse(JSON.parse(content)), encoding: 'string' };
+export function newFormPath(input, folder = '/forms/') {
+  const slug = (text) => text.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+  const raw = String(input || '').trim().replace(/\.json$/i, '');
+  const parts = raw.split('/').map((part) => part.trim()).filter(Boolean);
+  if (!parts.length) return {};
+  const title = parts[parts.length - 1];
+  const segments = parts.map(slug);
+  if (segments.some((segment) => !segment)) return {};
+  const base = raw.includes('/') ? '/' : folder;
+  return { path: `${base}${segments.join('/')}.json`, title };
+}
+
+/** Normalizes a form document path to `/folder/name.json`. */
+export function toDocPath(path) {
+  const clean = `/${String(path || '').trim().replace(/^\/+/, '').replace(/\/+$/, '')}`;
+  return /\.json$/i.test(clean) ? clean : `${clean}.json`;
+}
+
+/**
+ * Splits a stored form document (a parsed JSON object) into the document (metadata and any other
+ * properties) and the form definition (its `data`). A bare Crispr definition is accepted too and
+ * gets wrapped in a document when it is saved.
+ */
+export function parseFormDocument(json) {
+  if (!isObject(json)) throw new Error('The document is not a JSON object.');
+  if (typeof json[':type'] === 'string') {
+    throw new Error('The document is a spreadsheet, not a form document.');
   }
+  if (isObject(json.metadata) && isObject(json.data)) {
+    const { data, ...document } = json;
+    return { document, definition: data };
+  }
+  if (json.adaptiveform !== undefined || Array.isArray(json.items)) {
+    return { document: { metadata: { schemaName: SCHEMA_NAME } }, definition: json };
+  }
+  throw new Error('The document is not a form document: it needs "metadata" and "data".');
+}
+
+/** The form document object with `definition` as its `data`. */
+export function buildFormDocument(document, definition) {
+  const metadata = { schemaName: SCHEMA_NAME, ...(document?.metadata || {}) };
+  return { ...document, metadata, data: definition };
+}
+
+/** Parses the text of a stored form document (see parseFormDocument). */
+export function readFormDocument(text) {
+  let json;
   try {
-    return { definition: JSON.parse(content), encoding: 'json' };
+    json = JSON.parse(text);
   } catch (e) {
-    // DA code blocks may carry soft line breaks inside the JSON text
-    return { definition: JSON.parse(content.replace(/\r?\n/g, '')), encoding: 'json' };
+    throw new Error(`The document is not valid JSON: ${e.message}`);
   }
+  return parseFormDocument(json);
 }
 
-export function encodeDefinition(definition, encoding = 'json') {
-  const json = JSON.stringify(definition);
-  return encoding === 'string' ? JSON.stringify(json) : json;
+/** Serializes a form document with the given definition as its `data`. */
+export function writeFormDocument(document, definition) {
+  return `${JSON.stringify(buildFormDocument(document, definition), null, 2)}\n`;
 }
 
-/** Reads the form definition of the `index`th form block of a DA document. */
-export function readForm(html, index = 0) {
-  const blocks = findFormBlocks(html);
-  if (!blocks.length) return { count: 0 };
-  const block = blocks[index];
-  if (!block) throw new Error(`The document has no form block #${index + 1}.`);
-  const { definition, encoding } = decodeDefinition(block.raw);
-  if (!definition || typeof definition !== 'object' || Array.isArray(definition)) {
-    throw new Error('The form block does not hold a form definition object.');
-  }
-  return { count: blocks.length, definition, encoding };
+export const FORM_SCHEMAS = {
+  'adaptive-form': 'Form',
+  'adaptive-form-fragment': 'Fragment',
+};
+
+function countFields(node) {
+  return (node?.items || []).reduce((total, item) => total
+    + (Array.isArray(item?.items) ? countFields(item) : 1), 0);
 }
 
-/** Returns the document with the `index`th form block's JSON replaced, nothing else changed. */
-export function writeForm(html, definition, { index = 0, encoding = 'json' } = {}) {
-  const block = findFormBlocks(html)[index];
-  if (!block) throw new Error(`The document has no form block #${index + 1}.`);
-  const code = encodeHtml(encodeDefinition(definition, encoding));
-  return `${html.slice(0, block.start)}${code}${html.slice(block.end)}`;
-}
-
-const formSection = (definition) => `<div><div class="form"><div><div><pre><code>${encodeHtml(encodeDefinition(definition))}</code></pre></div></div></div></div>`;
-
-export function newFormDocument(definition = NEW_FORM_JSON) {
-  return `<body><header></header><main>${formSection(definition)}</main><footer></footer></body>`;
-}
-
-/** Appends a section with a new form block to the end of the document's <main>. */
-export function appendFormSection(html, definition = NEW_FORM_JSON) {
-  const at = html.lastIndexOf('</main>');
-  if (at < 0) throw new Error('The document has no <main> element.');
-  return `${html.slice(0, at)}${formSection(definition)}${html.slice(at)}`;
+/**
+ * Describes a parsed JSON document if it is a form or form fragment document ({ metadata,
+ * data } with a schemaName of FORM_SCHEMAS), otherwise returns null.
+ */
+export function describeForm(json) {
+  if (!isObject(json) || !isObject(json.metadata) || !isObject(json.data)) return null;
+  const { schemaName } = json.metadata;
+  if (!Object.hasOwn(FORM_SCHEMAS, schemaName)) return null;
+  const strip = (text) => (typeof text === 'string' ? text.replace(/<[^>]+>/g, '').trim() : '');
+  return {
+    schemaName,
+    kind: FORM_SCHEMAS[schemaName],
+    title: strip(json.metadata.title) || strip(json.data.title) || strip(json.data.label?.value),
+    fields: countFields(json.data),
+  };
 }
 
 // ---- JSON paths ('label.value', 'properties.fd:submit.actionName') ----
