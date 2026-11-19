@@ -105,14 +105,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "Captcha (Invisible)",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "fieldType",
@@ -123,14 +116,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "captcha",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               },
               {
                 "name": "required",
@@ -145,14 +131,7 @@
                   false
                 ],
                 "default": true,
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

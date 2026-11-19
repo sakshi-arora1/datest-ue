@@ -296,25 +296,6 @@ export function resolveComponent(item, mapping, componentIds) {
   return id || null;
 }
 
-/** Evaluates the JSONLogic subset used by UE model field conditions. */
-export function evaluateCondition(condition, data) {
-  if (condition === null || typeof condition !== 'object' || Array.isArray(condition)) {
-    return condition;
-  }
-  const [op] = Object.keys(condition);
-  const args = [condition[op]].flat();
-  const val = (arg) => evaluateCondition(arg, data);
-  switch (op) {
-    case 'var': return getPath(data, String(args[0]));
-    case '===': case '==': return val(args[0]) === val(args[1]);
-    case '!==': case '!=': return val(args[0]) !== val(args[1]);
-    case 'and': return args.every((a) => val(a));
-    case 'or': return args.some((a) => val(a));
-    case '!': return !val(args[0]);
-    default: return true;
-  }
-}
-
 export function flattenFields(fields = []) {
   return fields.flatMap((field) => (Array.isArray(field.fields)
     ? [field, ...flattenFields(field.fields)] : [field]));

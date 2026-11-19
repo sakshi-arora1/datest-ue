@@ -255,14 +255,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "image",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

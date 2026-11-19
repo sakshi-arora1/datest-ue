@@ -511,7 +511,7 @@
               },
               {
                 "name": "properties_afs_layout_orientation",
-                "dataRef": "$.properties['afs:layout'].orientation",
+                "dataRef": "$.properties.\"afs:layout\".orientation",
                 "label": {
                   "value": "Display Options"
                 },
@@ -611,14 +611,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "checkbox-group",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

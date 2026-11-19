@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   readFormDocument, writeFormDocument, newFormDocument, newFormPath, SCHEMA_NAME, setPath, getItem,
-  moveItem, insertItem, duplicateItem, createItem, resolveComponent, evaluateCondition,
+  moveItem, insertItem, duplicateItem, createItem, resolveComponent,
 } from '../../../../tools/apps/formeditor/editor/crispr.js';
 
 const root = new URL('../../../../', import.meta.url);
@@ -131,11 +131,4 @@ test('duplicates items with fresh names and without ids', () => {
   assert.equal(copy.name, 'panel2');
   assert.deepEqual(copy.items.map((i) => i.name), ['a1', 'b1']);
   assert.equal(form.items[1].name, 'panel1');
-});
-
-test('evaluates UE field conditions', () => {
-  assert.equal(evaluateCondition({ '===': [1, 0] }, {}), false);
-  const cond = { and: [{ '===': [{ var: 'properties.repeatable' }, true] }, { '!==': [{ var: 'properties.variant' }, 'noButtons'] }] };
-  assert.equal(evaluateCondition(cond, { properties: { repeatable: true } }), true);
-  assert.equal(evaluateCondition(cond, { properties: { repeatable: true, variant: 'noButtons' } }), false);
 });

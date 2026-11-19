@@ -568,14 +568,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "email",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

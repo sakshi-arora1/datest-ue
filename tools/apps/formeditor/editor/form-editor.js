@@ -26,10 +26,10 @@ import loadCatalog from './catalog.js';
 import {
   parseFormDocument, buildFormDocument, newFormDocument, newFormPath, toDocPath, encodeDefinition,
   getPath, setPath, getItem, isContainer, samePath, isAncestor, insertItem, removeItem,
-  moveItem, duplicateItem, createItem, evaluateCondition, itemLabel,
+  moveItem, duplicateItem, createItem, itemLabel,
 } from './crispr.js';
 import { icon } from './icons.js';
-import { fromDataRef } from './property-form.js';
+import { fromDataRef, loadFormRuntime, PropertySheet } from './property-form.js';
 import { registry as defaultRegistry, FormStorage, Assistant } from './contract.js';
 
 // default folder of new forms named without a path
@@ -55,7 +55,7 @@ export class FormEditor extends LitElement {
     // when not set
     storage: { attribute: false },
     assistant: { attribute: false },
-    // { catalogUrl, previewUrl (false: no Preview view), path, syncUrl, registry }
+    // { catalogUrl, runtimeUrl, previewUrl (false: no Preview view), path, syncUrl, registry }
     options: { attribute: false },
     _status: { state: true },
     _error: { state: true },
@@ -170,6 +170,13 @@ export class FormEditor extends LitElement {
     } catch (e) {
       this._status = 'error';
       this._error = `The form component catalog could not be loaded: ${e.message}`;
+      return;
+    }
+    try {
+      this._runtime = await loadFormRuntime(this.options?.runtimeUrl);
+    } catch (e) {
+      this._status = 'error';
+      this._error = `The form runtime could not be loaded: ${e.message}`;
       return;
     }
     const path = this.options?.path ?? (this.syncUrl ? new URLSearchParams(window.location.search).get('path') : '');
@@ -1187,24 +1194,28 @@ export class FormEditor extends LitElement {
 
   // ---- Render: inspector ----
 
-  // A property sheet is the Crispr form stored with the component (component-property-forms.json):
+  // A property sheet is the Crispr form stored with the component (component-property-forms.json),
+  // running in the form runtime with the selected item as its data (editor/property-form.js):
   // panels are tabs, fields are bound to the item's properties with dataRef.
+
+  propertySheet(sheet, obj) {
+    const cached = this._sheet;
+    if (cached?.sheet !== sheet || cached?.obj !== obj) {
+      this._sheet = { sheet, obj, runtime: new PropertySheet(this._runtime, sheet, obj) };
+    }
+    return this._sheet.runtime;
+  }
 
   commitField(target, field, raw, original) {
     const key = fromDataRef(field.dataRef);
-    const label = field.label?.value || key;
     const errors = { ...this._fieldErrors };
     delete errors[key];
     let value = raw;
     if (typeof value === 'string' && !field.properties?.['fe:richText']) value = value.trim();
-    if (field.required && (value === '' || value === undefined || (Array.isArray(value) && !value.length))) {
-      errors[key] = `${label} is required.`;
-    } else if (field.pattern && typeof value === 'string' && value
-      && !new RegExp(field.pattern).test(value)) {
-      errors[key] = field.constraintMessages?.pattern || `${label} is not valid.`;
-    }
+    const error = this._sheet?.runtime.validate(field, value);
+    if (error) errors[key] = error;
     this._fieldErrors = errors;
-    if (errors[key]) return;
+    if (error) return;
     if (field.fieldType === 'number-input' && value !== '' && value !== undefined) {
       value = field.type === 'number' ? Number(value) : String(value);
     }
@@ -1220,13 +1231,14 @@ export class FormEditor extends LitElement {
   renderField(target, obj, field) {
     const key = fromDataRef(field.dataRef);
     const id = `f-${field.name}`;
-    const value = getPath(obj, key);
+    // the runtime's value: the item's property, or the field's default
+    const { value } = field;
     const error = this._fieldErrors[key];
     const disabled = !this._canWrite;
     const text = field.label?.value || key;
     const label = html`<label class="field-label" for=${id}>${text}${field.required ? html`<span class="required" aria-hidden="true">*</span>` : nothing}</label>`;
     const describedBy = error ? `${id}-error` : nothing;
-    const commit = (raw) => this.commitField(target, field, raw, value);
+    const commit = (raw) => this.commitField(target, field, raw, getPath(obj, key));
     const options = (field.enum || [])
       .map((v, i) => ({ value: v, name: field.enumNames?.[i] ?? String(v) }));
     let control;
@@ -1332,11 +1344,6 @@ export class FormEditor extends LitElement {
     </span>`;
   }
 
-  isFieldShown(field, obj) {
-    const condition = field.properties?.['fe:visibleWhen'];
-    return condition === undefined || evaluateCondition(condition, obj);
-  }
-
   renderInspector() {
     const target = this._selected;
     if (!target) {
@@ -1346,8 +1353,7 @@ export class FormEditor extends LitElement {
     const component = target.length ? this._catalog.resolve(obj) : null;
     const sheet = target.length
       ? this._catalog.propertyForm(component) : this._catalog.rootPropertyForm();
-    const tabs = (sheet?.items || [])
-      .map((panel) => ({ label: panel.label?.value, fields: panel.items || [] }));
+    const tabs = sheet ? this.propertySheet(sheet, obj).tabs : [];
     tabs.push({ label: 'JSON', json: true });
     const active = tabs[Math.min(this._tab, tabs.length - 1)];
     const title = target.length ? (component?.title || obj?.fieldType || 'Item') : 'Form';
@@ -1365,7 +1371,7 @@ export class FormEditor extends LitElement {
         </div>
         <div class="panel-body inspector-body">
           ${active.json ? this.renderJsonEditor(target, obj) : active.fields
-    .filter((field) => field.dataRef && this.isFieldShown(field, obj))
+    .filter((field) => field.visible !== false)
     .map((field) => this.renderField(target, obj, field))}
         </div>
       </div>

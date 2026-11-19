@@ -113,7 +113,7 @@
             "items": [
               {
                 "name": "properties_fd_submit_actionName",
-                "dataRef": "$.properties['fd:submit'].actionName",
+                "dataRef": "$.properties.\"fd:submit\".actionName",
                 "label": {
                   "value": "Submit action"
                 },
@@ -131,7 +131,7 @@
               },
               {
                 "name": "properties_fd_submit_configUrl",
-                "dataRef": "$.properties['fd:submit'].configUrl",
+                "dataRef": "$.properties.\"fd:submit\".configUrl",
                 "label": {
                   "value": "Submission configuration sheet"
                 },

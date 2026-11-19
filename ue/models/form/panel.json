@@ -493,15 +493,8 @@
                 "type": "number",
                 "default": 1,
                 "description": "Minimum number of times the panel appears on the form",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      {
-                        "var": "properties.repeatable"
-                      },
-                      true
-                    ]
-                  }
+                "rules": {
+                  "visible": "properties_repeatable.$value == true()"
                 }
               },
               {
@@ -514,27 +507,8 @@
                 "type": "number",
                 "placeholder": "No Limit",
                 "description": "Maximum number of times the panel can appear on the form. No value indicates no limit.",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "and": [
-                      {
-                        "===": [
-                          {
-                            "var": "properties.repeatable"
-                          },
-                          true
-                        ]
-                      },
-                      {
-                        "!==": [
-                          {
-                            "var": "properties.variant"
-                          },
-                          "noButtons"
-                        ]
-                      }
-                    ]
-                  }
+                "rules": {
+                  "visible": "properties_repeatable.$value == true() && properties_variant.$value != 'noButtons'"
                 }
               },
               {
@@ -554,15 +528,8 @@
                   "Add & Delete Buttons"
                 ],
                 "default": "addDeleteButtons",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      {
-                        "var": "properties.repeatable"
-                      },
-                      true
-                    ]
-                  }
+                "rules": {
+                  "visible": "properties_repeatable.$value == true()"
                 }
               },
               {
@@ -574,27 +541,8 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "Add",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "and": [
-                      {
-                        "===": [
-                          {
-                            "var": "properties.variant"
-                          },
-                          "addDeleteButtons"
-                        ]
-                      },
-                      {
-                        "===": [
-                          {
-                            "var": "properties.repeatable"
-                          },
-                          true
-                        ]
-                      }
-                    ]
-                  }
+                "rules": {
+                  "visible": "properties_repeatable.$value == true() && properties_variant.$value == 'addDeleteButtons'"
                 }
               },
               {
@@ -606,27 +554,8 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "Delete",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "and": [
-                      {
-                        "===": [
-                          {
-                            "var": "properties.variant"
-                          },
-                          "addDeleteButtons"
-                        ]
-                      },
-                      {
-                        "===": [
-                          {
-                            "var": "properties.repeatable"
-                          },
-                          true
-                        ]
-                      }
-                    ]
-                  }
+                "rules": {
+                  "visible": "properties_repeatable.$value == true() && properties_variant.$value == 'addDeleteButtons'"
                 }
               }
             ]
@@ -671,14 +600,7 @@
                 "fieldType": "text-input",
                 "type": "string",
                 "default": "panel",
-                "properties": {
-                  "fe:visibleWhen": {
-                    "===": [
-                      1,
-                      0
-                    ]
-                  }
-                }
+                "visible": false
               }
             ]
           }

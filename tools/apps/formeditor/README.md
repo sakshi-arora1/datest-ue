@@ -87,6 +87,7 @@ these options:
 | --- | --- | --- |
 | `path` | the `path` query parameter | Form document to open; without it, the editor lists the forms |
 | `catalogUrl` | the site root | Folder URL of the `component-*.json` files |
+| `runtimeUrl` | the site's `blocks/form/rules/model/afb-runtime.min.js` | Adaptive Forms runtime that runs the Block Inspector sheets |
 | `previewUrl` | `editor/preview.html` | Preview page; `false` hides the Preview view |
 | `syncUrl` | `true` | Keep the open form in the `path` query parameter |
 | `registry` | the shared registry | Registry to resolve the contracts from |
@@ -181,15 +182,29 @@ to change what the Block Inspector shows for a component, edit its property form
 editor loads that file as it is.
 
 In a property form, every panel is a tab of the sheet, and every field is bound to the property
-it edits with `dataRef` (for example `$.properties['fd:submit'].actionName`). The Block
-Inspector draws the fields by `fieldType` (`text-input`, `multiline-input`, `number-input`,
-`date-input`, `checkbox`, `checkbox-group`, `drop-down`, `radio-group`) and uses `required`,
-`default`, `placeholder`, `description`, `enum`/`enumNames`, `pattern` and
-`constraintMessages.pattern`. Two hints have no Crispr property and are kept under `properties`:
-`fe:visibleWhen` (a JSONLogic condition on the item, such as
-`{ "===": [{ "var": "properties.repeatable" }, true] }`) and `fe:richText`. A unit test checks
-that every component has a valid property form and that `component-property-forms.json` is
-up to date. The palette and the properties therefore match what authors see in Universal Editor. Each item
+it edits with `dataRef`, in the runtime's syntax (names that are not identifiers are
+double-quoted: `$.properties."fd:submit".actionName`, `$.":type"`).
+
+The sheet runs in the Adaptive Forms runtime, the one the form block uses
+(`blocks/form/rules/model/afb-runtime.min.js`, option `runtimeUrl`). When an item is
+selected, the editor creates a runtime form from its property form, with a copy of the item as
+the data. The runtime then resolves:
+
+- the value of each field: the item's property, or the field's `default`;
+- which fields are shown: `visible`, and `rules.visible` (json-formula on the sibling fields,
+  for example `properties_repeatable.$value == true()`);
+- validation: `required`, `pattern`, `constraintMessages` and the other Crispr constraints, with
+  the runtime's messages.
+
+The editor draws the fields with its own controls, by `fieldType` (`text-input`,
+`multiline-input`, `number-input`, `date-input`, `checkbox`, `checkbox-group`, `drop-down`,
+`radio-group`). It writes an accepted value straight into the item, as one undo step, and keeps
+an invalid one out of the form. After each change it builds the sheet again from the item, so
+undo, redo and the other views stay in sync, and properties that no field binds are kept.
+`fe:richText` (under `properties`) keeps the white space around a value.
+
+Unit tests check that every component has a property form that runs in the runtime, with every
+field bound, and that `component-property-forms.json` is up to date. The palette and the properties therefore match what authors see in Universal Editor. Each item
 also has a JSON tab, which is the only editor for items that match no component.
 
 Undo/redo (header buttons, ⌘Z / ⇧⌘Z or ⌘Y, Ctrl on Windows) and save (⌘S) work across all
@@ -226,11 +241,11 @@ runtime dependencies. The editor itself (`editor/`) depends on no host; only the
 | Styles | Spectrum 2 design tokens as CSS custom properties (DA's nx2 styles in the DA app, `editor/tokens.css` standalone); the editor's own stylesheet adopted as a constructable stylesheet; plain CSS with grid, container queries and `light-dark()` | `editor/form-editor.css`, `editor/tokens.css` |
 | Icons | Inline SVG paths | `editor/icons.js` |
 | State | Lit reactive properties; the form is a plain JSON object, every edit is a deep copy (`structuredClone`) pushed on an undo stack (100 steps) | `editor/form-editor.js` |
-| Form model | Crispr (Adaptive Form JSON) with pure helpers: JSON paths, item tree operations, UE mapping rules, JSONLogic conditions | `editor/crispr.js` |
+| Form model | Crispr (Adaptive Form JSON) with pure helpers: JSON paths, item tree operations, UE mapping rules | `editor/crispr.js` |
 | Document format | Structured Content JSON documents (`{ metadata, data }`), stored as they are | `editor/crispr.js` |
 | Persistence | A `FormStorage`: the DA source API (`admin.da.live`: `/source`, `/list`) through `daFetch`, which adds the IMS token; or the browser's `localStorage`, one JSON entry per document under a key prefix | `providers/da/`, `providers/local/` |
 | Component catalog | The site's Universal Editor configuration (`component-*.json`), fetched from the site (`catalogUrl`) | `editor/catalog.js` |
-| Property sheets | Crispr forms stored with the components (`ue/models/form/*.json`, merged into `component-property-forms.json` by `merge-json-cli`), bound with `dataRef` | `editor/catalog.js`, `editor/form-editor.js` |
+| Property sheets | Crispr forms stored with the components (`ue/models/form/*.json`, merged into `component-property-forms.json` by `merge-json-cli`), bound with `dataRef`, run in the site's Adaptive Forms runtime (`afb-runtime`: values, `visible` rules, validation) and drawn with the editor's controls | `editor/property-form.js`, `editor/form-editor.js` |
 | Drag and drop | Native HTML5 drag and drop | `editor/form-editor.js` |
 | Preview | The site's own form block (`blocks/form`) and its rule engine (web worker), in a same-origin iframe, talking to the editor with `postMessage` (`previewUrl`) | `editor/preview.*` |
 | Assistant | An `Assistant`: in the DA app, the DA shell chat panel (Experience Workspace chat), driven through the SDK; none standalone | `providers/da/assistant.js` |
@@ -282,7 +297,7 @@ only to site apps.
 | `editor/contract.js` | The `FormStorage` and `Assistant` contracts and the registry |
 | `editor/crispr.js` | Pure helpers: form documents, JSON paths, item tree operations, UE catalog rules |
 | `editor/catalog.js` | Loads the UE configuration as the component catalog |
-| `editor/property-form.js` | Reads the property path of a `dataRef` |
+| `editor/property-form.js` | Loads the form runtime; runs a property sheet in it; reads the property path of a `dataRef` |
 | `editor/preview.html`, `.js`, `.css` | Preview view: renders the form with `blocks/form` |
 | `editor/icons.js` | Icons |
 | `providers/da/storage.js` | `FormStorage` on a DA site |
