@@ -27,14 +27,8 @@ export function sourceUrl(org, site, path) {
   return `${DA_ADMIN}/source/${encodeURIComponent(org)}/${encodeURIComponent(site)}${encodePath(path)}`;
 }
 
-/** Normalizes a form document path to `/folder/name.json`. */
-export function toDocPath(path) {
-  const clean = `/${String(path || '').trim().replace(/^\/+/, '').replace(/\/+$/, '')}`;
-  return /\.json$/i.test(clean) ? clean : `${clean}.json`;
-}
-
-/** Returns `{ text, canWrite }`, `null` when the document does not exist. */
-export async function getDocument(org, site, path) {
+/** Returns `{ text, canWrite }`, `null` when the source file does not exist. */
+export async function getSource(org, site, path) {
   const resp = await daFetch(`${sourceUrl(org, site, path)}?nocache=${Date.now()}`, { cache: 'no-store' });
   if (resp.status === 404) return null;
   if (!resp.ok) throw new Error(`Unable to load ${path} (HTTP ${resp.status}).`);
@@ -44,34 +38,30 @@ export async function getDocument(org, site, path) {
   return { text, canWrite };
 }
 
-/** Stores a JSON document as it is. */
-export async function saveDocument(org, site, path, text) {
+/** Stores a source file (for example a Structured Content document as `text/html`). */
+export async function saveSource(org, site, path, text, type = 'text/html') {
   const body = new FormData();
-  body.append('data', new Blob([text], { type: 'application/json' }));
+  body.append('data', new Blob([text], { type }));
   const resp = await daFetch(sourceUrl(org, site, path), { method: 'POST', body });
   if (!resp.ok) throw new Error(`Unable to save ${path} (HTTP ${resp.status}).`);
 }
 
 /**
- * Lists the JSON files under `path`, recursively, as `{ path, lastModified }`. Hidden folders
- * (such as `/.da`, which holds DA configuration) are skipped.
+ * Lists the files with extension `ext` under `path`, recursively, as `{ path, lastModified }`
+ * (paths with their extension). Hidden folders (such as `/.da`, which holds DA configuration)
+ * are skipped.
  */
-export async function listJsonFiles(org, site, path = '/') {
+export async function listFiles(org, site, ext, path = '/') {
   const resp = await daFetch(`${DA_ADMIN}/list/${encodeURIComponent(org)}/${encodeURIComponent(site)}${encodePath(path)}`);
   if (resp.status === 404) return [];
   if (!resp.ok) throw new Error(`Unable to list ${path} (HTTP ${resp.status}).`);
   const items = await resp.json();
   if (!Array.isArray(items)) return [];
   const files = items
-    .filter((item) => typeof item.ext === 'string' && item.ext.replace(/^\./, '').toLowerCase() === 'json')
-    .map((item) => ({ path: `${path}${item.name}.json`, lastModified: item.lastModified }));
+    .filter((item) => typeof item.ext === 'string' && item.ext.replace(/^\./, '').toLowerCase() === ext)
+    .map((item) => ({ path: `${path}${item.name}.${ext}`, lastModified: item.lastModified }));
   const nested = await Promise.all(items
     .filter((item) => !item.ext && !String(item.name).startsWith('.'))
-    .map((folder) => listJsonFiles(org, site, `${path}${folder.name}/`)));
+    .map((folder) => listFiles(org, site, ext, `${path}${folder.name}/`)));
   return [...files, ...nested.flat()].sort((a, b) => a.path.localeCompare(b.path));
-}
-
-/** Lists the paths of the JSON documents under `path`, recursively. */
-export async function listDocuments(org, site, path = '/') {
-  return (await listJsonFiles(org, site, path)).map((file) => file.path);
 }

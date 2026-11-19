@@ -244,7 +244,7 @@ export class FormEditor extends LitElement {
     if (!this.syncUrl) return;
     try {
       const url = new URL(window.location.href);
-      if (this._path) url.searchParams.set('path', this._path.replace(/\.json$/i, ''));
+      if (this._path) url.searchParams.set('path', this._path);
       else url.searchParams.delete('path');
       url.searchParams.delete('block');
       window.history.replaceState(null, '', url);
@@ -772,7 +772,7 @@ export class FormEditor extends LitElement {
           ${ready && !this._canWrite ? html`<span class="icon-btn read-only" role="img" aria-label="Read-only — you don't have write access" title="Read-only">${icon('lock')}</span>` : nothing}
           <button type="button" class="doc-link" @click=${this.showPicker} title="Open another form">
             <span class="doc-app">Form Editor</span>
-            ${this._path ? html`<span class="doc-path">${this._path.replace(/\.json$/i, '')}</span>` : nothing}
+            ${this._path ? html`<span class="doc-path">${this._path}</span>` : nothing}
           </button>
         </div>
         <div class="group group-center">
@@ -1384,10 +1384,10 @@ export class FormEditor extends LitElement {
     return html`
       <div class="picker">
         <h1>Open a form</h1>
-        <p class="picker-sub">Forms are Structured Content JSON documents (<code>schemaName: adaptive-form</code>) in <code>${this.storageLabel}</code>.</p>
+        <p class="picker-sub">Forms are Structured Content documents (<code>schemaName: adaptive-form</code>) in <code>${this.storageLabel}</code>.</p>
         <form class="picker-row" @submit=${(e) => { e.preventDefault(); if (this._pickerPath.trim()) this.openDocument(this._pickerPath); }}>
           <label class="visually-hidden" for="picker-path">Document path</label>
-          <input id="picker-path" type="text" placeholder="/forms/contact (.json)" .value=${this._pickerPath} @input=${(e) => { this._pickerPath = e.target.value; }}>
+          <input id="picker-path" type="text" placeholder="/forms/contact" .value=${this._pickerPath} @input=${(e) => { this._pickerPath = e.target.value; }}>
           <button type="submit" class="accent-btn" ?disabled=${!this._pickerPath.trim()}>Open</button>
         </form>
         <form class="picker-row" @submit=${this.createDocument}>
@@ -1400,7 +1400,7 @@ export class FormEditor extends LitElement {
         ${!this._docsLoading && !this._docs.length ? html`<p class="empty-note">No form documents in the site.</p>` : nothing}
         <ul class="doc-list">
           ${this._docs.map((doc) => html`<li><button type="button" class="doc-item" @click=${() => this.openDocument(doc.path)}>
-            <span>${doc.path.replace(/\.json$/i, '')}</span>
+            <span>${doc.path}</span>
             <span class="doc-meta">${doc.title ? `${doc.title} · ` : ''}${doc.kind}</span>
           </button></li>`)}
         </ul>

@@ -15,36 +15,40 @@
  */
 
 /*
- * FormStorage (editor/contract.js) on DA: form documents are JSON documents of a DA site, read,
- * written and listed through the DA source API (admin.da.live).
+ * FormStorage (editor/contract.js) on DA: a form is a DA Structured Content document of the site,
+ * `<path>.html` in DA's wire format, read, written and listed through the DA source API
+ * (admin.da.live) and converted to and from its JSON document with the DA Structured Content
+ * SDK (structured-content.js).
  */
-import { getDocument, saveDocument } from './api.js';
+import { getSource, saveSource } from './api.js';
+import {
+  loadStructuredContentSdk, fromStructuredContentHtml, toStructuredContentHtml,
+} from './structured-content.js';
+import { toDocPath } from '../../editor/crispr.js';
 import scanForms from '../../../formsmanager/scan.js';
 
-export default function createDaStorage({ org, site }) {
+/** The source file of a document path: `/forms/contact` -> `/forms/contact.html`. */
+export const sourcePath = (path) => `${toDocPath(path)}.html`;
+
+export default function createDaStorage({ org, site, loadSdk = loadStructuredContentSdk }) {
   return {
     describe() {
       return { label: `${org}/${site}`, kind: 'DA' };
     },
 
     async read(path) {
-      const doc = await getDocument(org, site, path);
-      if (!doc) return null;
-      let document;
-      try {
-        document = JSON.parse(doc.text);
-      } catch (e) {
-        throw new Error(`The document is not valid JSON: ${e.message}`);
-      }
-      return { document, canWrite: doc.canWrite };
+      const [source, sdk] = await Promise.all([getSource(org, site, sourcePath(path)), loadSdk()]);
+      if (!source) return null;
+      return { document: fromStructuredContentHtml(sdk, source.text), canWrite: source.canWrite };
     },
 
     async write(path, document) {
-      await saveDocument(org, site, path, `${JSON.stringify(document, null, 2)}\n`);
+      const sdk = await loadSdk();
+      await saveSource(org, site, sourcePath(path), toStructuredContentHtml(sdk, document));
     },
 
     list(options) {
-      return scanForms(org, site, options);
+      return scanForms(org, site, { loadSdk, ...options });
     },
   };
 }

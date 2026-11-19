@@ -125,7 +125,7 @@ class FormsManagerApp extends LitElement {
   editorUrl(path) {
     const params = new URLSearchParams();
     if (this._ref && this._ref !== 'main') params.set('ref', this._ref);
-    params.set('path', path.replace(/\.json$/i, ''));
+    params.set('path', path);
     const app = `/app/${encodeURIComponent(this._org)}/${encodeURIComponent(this._site)}/tools/apps/formeditor/formeditor`;
     return `https://da.live${app}?${params}`;
   }
@@ -195,7 +195,7 @@ class FormsManagerApp extends LitElement {
           <tbody>
             ${forms.map((form) => html`
               <tr>
-                <th scope="row" class="doc">${form.path.replace(/\.json$/i, '')}</th>
+                <th scope="row" class="doc">${form.path}</th>
                 <td>${form.title || html`<span class="muted">—</span>`}</td>
                 <td><span class="badge ${form.kind === 'Fragment' ? 'is-fragment' : ''}">${form.kind}</span></td>
                 <td class="num">${form.fields}</td>

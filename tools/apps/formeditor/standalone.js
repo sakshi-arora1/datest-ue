@@ -32,7 +32,7 @@ registry.register(FormStorage, {
 
 // a first form to start from, the first time the editor is opened in this browser
 const storage = await registry.resolve(FormStorage);
-const SAMPLE = '/forms/sample.json';
+const SAMPLE = '/forms/sample';
 if (storage && !(await storage.read(SAMPLE))) {
   const { data, metadata } = newFormDocument({ title: 'Sample form' });
   data.items.push(

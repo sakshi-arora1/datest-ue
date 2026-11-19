@@ -6,6 +6,7 @@ import {
 import GoogleReCaptcha from './integrations/recaptcha.js';
 import componentDecorator from './mappings.js';
 import { handleSubmit } from './submit.js';
+import { fetchStructuredContent } from './structured-content.js';
 import {
   createButton,
   createDropdownUsingEnum,
@@ -412,6 +413,9 @@ function extractFormDefinition(block) {
 }
 
 export async function fetchForm(pathname) {
+  // a form authored as a Structured Content document holds its definition in `data`
+  const structured = await fetchStructuredContent(pathname);
+  if (structured) return structured.data;
   // get the main form
   let data;
   let path = pathname;

@@ -15,37 +15,45 @@
  */
 
 /*
- * Finds the form documents of a site: lists every JSON file through the DA source API and reads
- * them a few at a time. Shared by the Forms Manager and the Form Picker.
+ * Finds the form documents of a site: lists every HTML document through the DA source API and reads
+ * them a few at a time, keeping the Structured Content documents of a form schema. Shared by the
+ * Forms Manager, the Form Picker and the Form Editor's DA storage.
  */
-import { listJsonFiles, getDocument } from '../formeditor/providers/da/api.js';
-import { describeFormDocument, mapWithLimit } from './forms.js';
+import { listFiles, getSource } from '../formeditor/providers/da/api.js';
+import {
+  loadStructuredContentSdk, structuredContentSchema, fromStructuredContentHtml,
+} from '../formeditor/providers/da/structured-content.js';
+import { FORM_SCHEMAS, describeForm } from '../formeditor/editor/crispr.js';
+import { mapWithLimit } from './forms.js';
 
 const CONCURRENCY = 6;
 
 /**
- * Calls `onForm` for every form document found (with path, lastModified, schemaName, kind,
- * title and fields) and `onProgress` after each file. `isCancelled` stops reporting results
- * of a scan that was replaced by a newer one.
+ * Reports the form and form fragment documents of a DA site with onForm({ path, title, kind,
+ * schemaName, fields, lastModified }): its Structured Content documents (`.html`) whose `da-form`
+ * block names one of `schemas`. Paths are reported without extension (`/forms/contact`).
  */
 export default async function scanForms(org, site, {
-  schemas, onForm, onProgress, isCancelled = () => false,
+  schemas = Object.keys(FORM_SCHEMAS), onForm, onProgress, isCancelled = () => false,
+  loadSdk = loadStructuredContentSdk,
 } = {}) {
-  const files = await listJsonFiles(org, site, '/');
+  const [files, sdk] = await Promise.all([listFiles(org, site, 'html', '/'), loadSdk()]);
   if (isCancelled()) return;
   const progress = { scanned: 0, total: files.length, unreadable: 0 };
   onProgress?.({ ...progress });
   await mapWithLimit(files, CONCURRENCY, async (file) => {
     let form = null;
     try {
-      const doc = await getDocument(org, site, file.path);
-      form = doc ? describeFormDocument(doc.text) : null;
+      const source = await getSource(org, site, file.path);
+      if (source && schemas.includes(structuredContentSchema(source.text))) {
+        form = describeForm(fromStructuredContentHtml(sdk, source.text));
+      }
     } catch {
       progress.unreadable += 1;
     }
     if (isCancelled()) return;
     progress.scanned += 1;
-    if (form && (!schemas || schemas.includes(form.schemaName))) onForm?.({ ...file, ...form });
+    if (form) onForm?.({ ...file, path: file.path.replace(/\.html$/i, ''), ...form });
     onProgress?.({ ...progress });
   });
 }

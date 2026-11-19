@@ -1,32 +1,33 @@
 /* eslint-disable import/no-relative-packages */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { describeFormDocument, mapWithLimit } from '../../../../tools/apps/formsmanager/forms.js';
+import { mapWithLimit } from '../../../../tools/apps/formsmanager/forms.js';
+import { describeForm } from '../../../../tools/apps/formeditor/editor/crispr.js';
 
-const doc = (metadata, data = { items: [] }) => JSON.stringify({ metadata, data });
+const doc = (metadata, data = { items: [] }) => ({ metadata, data });
 
 test('describes form and form fragment documents', () => {
-  const form = describeFormDocument(doc({ schemaName: 'adaptive-form', title: 'Contact' }, {
+  const form = describeForm(doc({ schemaName: 'adaptive-form', title: 'Contact' }, {
     title: 'ignored',
     items: [{ name: 'a' }, { name: 'p', fieldType: 'panel', items: [{ name: 'b' }, { name: 'c' }] }],
   }));
   assert.deepEqual(form, {
     schemaName: 'adaptive-form', kind: 'Form', title: 'Contact', fields: 3,
   });
-  const fragment = describeFormDocument(doc({ schemaName: 'adaptive-form-fragment' }, { title: '<b>Address</b>', items: [] }));
+  const fragment = describeForm(doc({ schemaName: 'adaptive-form-fragment' }, { title: '<b>Address</b>', items: [] }));
   assert.deepEqual([fragment.kind, fragment.title, fragment.fields], ['Fragment', 'Address', 0]);
 });
 
-test('ignores other JSON documents', () => {
+test('ignores other documents', () => {
   [
     doc({ schemaName: 'product' }),
     doc({}),
-    JSON.stringify({ total: 1, ':type': 'sheet', data: [{ a: 1 }] }),
-    JSON.stringify({ adaptiveform: '0.10.0', items: [] }),
-    JSON.stringify({ metadata: { schemaName: 'adaptive-form' }, data: [] }),
-    JSON.stringify({ metadata: { schemaName: 'toString' }, data: {} }),
-    'not json',
-  ].forEach((text) => assert.equal(describeFormDocument(text), null, text));
+    { total: 1, ':type': 'sheet', data: [{ a: 1 }] },
+    { adaptiveform: '0.10.0', items: [] },
+    { metadata: { schemaName: 'adaptive-form' }, data: [] },
+    { metadata: { schemaName: 'toString' }, data: {} },
+    null,
+  ].forEach((json) => assert.equal(describeForm(json), null, JSON.stringify(json)));
 });
 
 test('runs tasks with a concurrency limit and keeps the order', async () => {
