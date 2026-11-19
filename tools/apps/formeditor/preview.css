@@ -1,0 +1,22 @@
+body {
+  background: #fff;
+}
+
+main .form-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 32px 64px;
+}
+
+.fe-preview-note {
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #e5f0fe;
+  color: #292929;
+  font-size: 14px;
+}
+
+.fe-preview-error {
+  color: #d73220;
+}
