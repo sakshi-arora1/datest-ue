@@ -301,5 +301,389 @@
       ]
     }
   ],
-  "filters": []
+  "filters": [],
+  "propertyForms": [
+    {
+      "id": "panel",
+      "form": {
+        "adaptiveform": "0.10.0",
+        "metadata": {
+          "grammar": "json-formula-1.0.0",
+          "version": "1.0.0"
+        },
+        "title": "panel properties",
+        "properties": {
+          "fe:model": "panel"
+        },
+        "items": [
+          {
+            "name": "basic",
+            "fieldType": "panel",
+            "label": {
+              "value": "Basic"
+            },
+            "items": [
+              {
+                "name": "name",
+                "dataRef": "$.name",
+                "label": {
+                  "value": "Name"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "required": true,
+                "pattern": "^[^$].*",
+                "constraintMessages": {
+                  "pattern": "Name cannot start with $"
+                }
+              },
+              {
+                "name": "label_value",
+                "dataRef": "$.label.value",
+                "label": {
+                  "value": "Title"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "Panel"
+              },
+              {
+                "name": "properties_hideTitle",
+                "dataRef": "$.properties.hideTitle",
+                "label": {
+                  "value": "Hide title"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "dataRef",
+                "dataRef": "$.dataRef",
+                "label": {
+                  "value": "Bind reference"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              },
+              {
+                "name": "properties_unboundFormElement",
+                "dataRef": "$.properties.unboundFormElement",
+                "label": {
+                  "value": "Mark as Unbound Form Element"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "visible",
+                "dataRef": "$.visible",
+                "label": {
+                  "value": "Show Component"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true
+              },
+              {
+                "name": "enabled",
+                "dataRef": "$.enabled",
+                "label": {
+                  "value": "Enable Component"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true
+              },
+              {
+                "name": "readOnly",
+                "dataRef": "$.readOnly",
+                "label": {
+                  "value": "Read-only"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "properties_colspan",
+                "dataRef": "$.properties.colspan",
+                "label": {
+                  "value": "Column Span"
+                },
+                "fieldType": "drop-down",
+                "type": "string",
+                "enum": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "7",
+                  "8",
+                  "9",
+                  "10",
+                  "11",
+                  "12"
+                ],
+                "enumNames": [
+                  "1 column",
+                  "2 column",
+                  "3 column",
+                  "4 column",
+                  "5 column",
+                  "6 column",
+                  "7 column",
+                  "8 column",
+                  "9 column",
+                  "10 column",
+                  "11 column",
+                  "12 column"
+                ],
+                "default": "12"
+              }
+            ]
+          },
+          {
+            "name": "repeat",
+            "fieldType": "panel",
+            "label": {
+              "value": "Repeat Panel"
+            },
+            "items": [
+              {
+                "name": "properties_repeatable",
+                "dataRef": "$.properties.repeatable",
+                "label": {
+                  "value": "Make panel repeatable"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "minOccur",
+                "dataRef": "$.minOccur",
+                "label": {
+                  "value": "Minimum repetitions"
+                },
+                "fieldType": "number-input",
+                "type": "number",
+                "default": 1,
+                "description": "Minimum number of times the panel appears on the form",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      {
+                        "var": "properties.repeatable"
+                      },
+                      true
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "maxOccur",
+                "dataRef": "$.maxOccur",
+                "label": {
+                  "value": "Maximum repetitions"
+                },
+                "fieldType": "number-input",
+                "type": "number",
+                "placeholder": "No Limit",
+                "description": "Maximum number of times the panel can appear on the form. No value indicates no limit.",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "and": [
+                      {
+                        "===": [
+                          {
+                            "var": "properties.repeatable"
+                          },
+                          true
+                        ]
+                      },
+                      {
+                        "!==": [
+                          {
+                            "var": "properties.variant"
+                          },
+                          "noButtons"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "properties_variant",
+                "dataRef": "$.properties.variant",
+                "label": {
+                  "value": "Variant"
+                },
+                "fieldType": "drop-down",
+                "type": "string",
+                "enum": [
+                  "noButtons",
+                  "addDeleteButtons"
+                ],
+                "enumNames": [
+                  "No Actions",
+                  "Add & Delete Buttons"
+                ],
+                "default": "addDeleteButtons",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      {
+                        "var": "properties.repeatable"
+                      },
+                      true
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "properties_repeatAddButtonLabel",
+                "dataRef": "$.properties.repeatAddButtonLabel",
+                "label": {
+                  "value": "Add Button Label"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "Add",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "and": [
+                      {
+                        "===": [
+                          {
+                            "var": "properties.variant"
+                          },
+                          "addDeleteButtons"
+                        ]
+                      },
+                      {
+                        "===": [
+                          {
+                            "var": "properties.repeatable"
+                          },
+                          true
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "properties_repeatDeleteButtonLabel",
+                "dataRef": "$.properties.repeatDeleteButtonLabel",
+                "label": {
+                  "value": "Delete Button Label"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "Delete",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "and": [
+                      {
+                        "===": [
+                          {
+                            "var": "properties.variant"
+                          },
+                          "addDeleteButtons"
+                        ]
+                      },
+                      {
+                        "===": [
+                          {
+                            "var": "properties.repeatable"
+                          },
+                          true
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "help",
+            "fieldType": "panel",
+            "label": {
+              "value": "Help Content"
+            },
+            "items": [
+              {
+                "name": "description",
+                "dataRef": "$.description",
+                "label": {
+                  "value": "Help text"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "tooltip",
+                "dataRef": "$.tooltip",
+                "label": {
+                  "value": "Short description"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "fieldType",
+                "dataRef": "$.fieldType",
+                "label": {
+                  "value": "fieldType"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "panel",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

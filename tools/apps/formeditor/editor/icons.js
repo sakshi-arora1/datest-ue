@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /* eslint-disable import/no-unresolved */
-import { html } from 'da-lit';
+import { html } from 'lit';
 
 const PATHS = {
   chat: 'M4 4h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z',

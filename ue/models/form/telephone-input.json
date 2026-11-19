@@ -245,5 +245,339 @@
       ]
     }
   ],
-  "filters": []
+  "filters": [],
+  "propertyForms": [
+    {
+      "id": "telephone-input",
+      "form": {
+        "adaptiveform": "0.10.0",
+        "metadata": {
+          "grammar": "json-formula-1.0.0",
+          "version": "1.0.0"
+        },
+        "title": "telephone-input properties",
+        "properties": {
+          "fe:model": "telephone-input"
+        },
+        "items": [
+          {
+            "name": "basic",
+            "fieldType": "panel",
+            "label": {
+              "value": "Basic"
+            },
+            "items": [
+              {
+                "name": "name",
+                "dataRef": "$.name",
+                "label": {
+                  "value": "Name"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "required": true,
+                "pattern": "^[^$].*",
+                "constraintMessages": {
+                  "pattern": "Name cannot start with $"
+                }
+              },
+              {
+                "name": "label_value",
+                "dataRef": "$.label.value",
+                "label": {
+                  "value": "Title"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "Telephone Input"
+              },
+              {
+                "name": "properties_hideTitle",
+                "dataRef": "$.properties.hideTitle",
+                "label": {
+                  "value": "Hide title"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "dataRef",
+                "dataRef": "$.dataRef",
+                "label": {
+                  "value": "Bind reference"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              },
+              {
+                "name": "properties_unboundFormElement",
+                "dataRef": "$.properties.unboundFormElement",
+                "label": {
+                  "value": "Mark as Unbound Form Element"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "visible",
+                "dataRef": "$.visible",
+                "label": {
+                  "value": "Show Component"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true
+              },
+              {
+                "name": "enabled",
+                "dataRef": "$.enabled",
+                "label": {
+                  "value": "Enable Component"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ],
+                "default": true
+              },
+              {
+                "name": "readOnly",
+                "dataRef": "$.readOnly",
+                "label": {
+                  "value": "Read-only"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "properties_colspan",
+                "dataRef": "$.properties.colspan",
+                "label": {
+                  "value": "Column Span"
+                },
+                "fieldType": "drop-down",
+                "type": "string",
+                "enum": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "7",
+                  "8",
+                  "9",
+                  "10",
+                  "11",
+                  "12"
+                ],
+                "enumNames": [
+                  "1 column",
+                  "2 column",
+                  "3 column",
+                  "4 column",
+                  "5 column",
+                  "6 column",
+                  "7 column",
+                  "8 column",
+                  "9 column",
+                  "10 column",
+                  "11 column",
+                  "12 column"
+                ],
+                "default": "12"
+              },
+              {
+                "name": "placeholder",
+                "dataRef": "$.placeholder",
+                "label": {
+                  "value": "Placeholder text"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              },
+              {
+                "name": "default",
+                "dataRef": "$.default",
+                "label": {
+                  "value": "Default Value"
+                },
+                "fieldType": "text-input",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "validation",
+            "fieldType": "panel",
+            "label": {
+              "value": "Validation"
+            },
+            "items": [
+              {
+                "name": "required",
+                "dataRef": "$.required",
+                "label": {
+                  "value": "Required"
+                },
+                "fieldType": "checkbox",
+                "type": "boolean",
+                "enum": [
+                  true,
+                  false
+                ]
+              },
+              {
+                "name": "constraintMessages_required",
+                "dataRef": "$.constraintMessages.required",
+                "label": {
+                  "value": "Error message"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "description": "Error message shown when required field is left empty."
+              },
+              {
+                "name": "constraintMessages_validationExpression",
+                "dataRef": "$.constraintMessages.validationExpression",
+                "label": {
+                  "value": "Script validation message"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "description": "Displayed when validation script fails."
+              },
+              {
+                "name": "minimum",
+                "dataRef": "$.minimum",
+                "label": {
+                  "value": "Lowest number / Smallest number"
+                },
+                "fieldType": "number-input",
+                "type": "number",
+                "description": "Minimum number allowed in the field"
+              },
+              {
+                "name": "constraintMessages_minimum",
+                "dataRef": "$.constraintMessages.minimum",
+                "label": {
+                  "value": "Minimum error message"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "description": "Error message shown when entered value is less than minimum."
+              },
+              {
+                "name": "maximum",
+                "dataRef": "$.maximum",
+                "label": {
+                  "value": "Highest number / Largest number"
+                },
+                "fieldType": "number-input",
+                "type": "number",
+                "description": "Maximum number allowed in the field"
+              },
+              {
+                "name": "constraintMessages_maximum",
+                "dataRef": "$.constraintMessages.maximum",
+                "label": {
+                  "value": "Maximum error message"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "description": "Error message shown when the entered value is more than maximum."
+              }
+            ]
+          },
+          {
+            "name": "help",
+            "fieldType": "panel",
+            "label": {
+              "value": "Help Content"
+            },
+            "items": [
+              {
+                "name": "description",
+                "dataRef": "$.description",
+                "label": {
+                  "value": "Help text"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "tooltip",
+                "dataRef": "$.tooltip",
+                "label": {
+                  "value": "Short description"
+                },
+                "fieldType": "multiline-input",
+                "type": "string",
+                "properties": {
+                  "fe:richText": true
+                }
+              },
+              {
+                "name": "fieldType",
+                "dataRef": "$.fieldType",
+                "label": {
+                  "value": "fieldType"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "text-input",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "_type",
+                "dataRef": "$[':type']",
+                "label": {
+                  "value": ":type"
+                },
+                "fieldType": "text-input",
+                "type": "string",
+                "default": "telephone-input",
+                "properties": {
+                  "fe:visibleWhen": {
+                    "===": [
+                      1,
+                      0
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

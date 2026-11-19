@@ -425,6 +425,8 @@ export async function fetchForm(pathname) {
 
   if (resp?.headers?.get('Content-Type')?.includes('application/json')) {
     data = await resp.json();
+    // a Structured Content document ({ metadata, data }) holds the form definition in `data`
+    if (data?.metadata && data?.data && typeof data.data === 'object') data = data.data;
   } else if (resp?.headers?.get('Content-Type')?.includes('text/html')) {
     resp = await fetch(path);
     data = await resp.text().then((html) => {
