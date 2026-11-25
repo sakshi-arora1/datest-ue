@@ -1,24 +1,34 @@
-# AEM Block Collection
+# Your Project's Title...
+Your project's description...
 
-This project provides a foundation for starting an AEM Edge Delivery Services project. It includes many common blocks and features a project might need.
+## Environments
+- Preview: https://main--{repo}--{owner}.aem.page/
+- Live: https://main--{repo}--{owner}.aem.live/
 
-## DA compatible
+## Documentation
 
-This specific repo has been _slightly_ modified to be compatible with DA's live preview.
+Before using the aem-boilerplate, we recommend you to go through the documentation on https://www.aem.live/docs/ and more specifically:
+1. [Developer Tutorial](https://www.aem.live/developer/tutorial)
+2. [The Anatomy of a Project](https://www.aem.live/developer/anatomy-of-a-project)
+3. [Web Performance](https://www.aem.live/developer/keeping-it-100)
+4. [Markup, Sections, Blocks, and Auto Blocking](https://www.aem.live/developer/markup-sections-blocks)
 
-## Getting started
+## Installation
 
-### 1. Github
-1. Use this template to make a new repo.
-1. Install [AEM Code Sync](https://github.com/apps/aem-code-sync).
+```sh
+npm i
+```
 
-### 2. DA content
-1. Browse to https://da.live/start.
-2. Follow the steps.
+## Linting
 
-### 3. Local development
-1. Clone your new repo to your computer.
-1. Install the AEM CLI using your terminal: `sudo npm install -g @adobe/aem-cli`
-1. Start the AEM CLI: `aem up`.
-1. Open the `{repo}` folder in your favorite code editor and buil something.
-1. **Recommended:** Install common npm packages like linting and testing: `npm i`.
+```sh
+npm run lint
+```
+
+## Local development
+
+1. Create a new repository based on the `aem-boilerplate` template
+1. Add the [AEM Code Sync GitHub App](https://github.com/apps/aem-code-sync) to the repository
+1. Install the [AEM CLI](https://github.com/adobe/helix-cli): `npm install -g @adobe/aem-cli`
+1. Start AEM Proxy: `aem up` (opens your browser at `http://localhost:3000`)
+1. Open the `{repo}` directory in your favorite IDE and start coding :)
