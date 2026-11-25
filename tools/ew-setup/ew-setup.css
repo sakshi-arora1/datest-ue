@@ -1,0 +1,262 @@
+ew-setup-app {
+  --ew-accent: var(--s2-blue-900);
+  --ew-accent-hover: var(--s2-blue-1000);
+
+  display: block;
+  max-width: var(--grid-container-width, 900px);
+  margin: var(--spacing-800, 48px) auto;
+  padding: 0 var(--spacing-400, 24px);
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--body-font-family, adobe-clean, 'Source Sans Pro', -apple-system, sans-serif);
+  color: var(--s2-gray-800, #222);
+}
+
+/*
+ * sl-button hosts must NOT use nexter class names (.accent etc.):
+ * nexter buttons.css targets those and paints the host while ::part(base) paints
+ * the inner button — causing a nested double-pill. Use ew- prefixed classes instead.
+ */
+sl-button.ew-fill-accent,
+sl-button.ew-quiet-secondary {
+  background: transparent;
+  border: none;
+  padding: 0;
+  vertical-align: middle;
+}
+
+sl-button.ew-fill-accent::part(base) {
+  background: var(--ew-accent);
+  border-color: var(--ew-accent);
+  color: var(--s2-gray-75, #fff);
+}
+
+sl-button.ew-fill-accent::part(base):disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+sl-button.ew-fill-accent::part(base):hover:not(:disabled) {
+  background: var(--ew-accent-hover);
+  border-color: var(--ew-accent-hover);
+}
+
+sl-button.ew-quiet-secondary::part(base) {
+  background: transparent;
+  border: 1px solid var(--s2-gray-300, #ccc);
+  color: var(--s2-gray-800, #222);
+}
+
+sl-button.ew-quiet-secondary::part(base):hover:not(:disabled) {
+  background: var(--s2-gray-75, #f0f0f0);
+  border-color: var(--s2-gray-400, #aaa);
+}
+
+ew-setup-app sl-input {
+  display: block;
+  width: 100%;
+}
+
+ew-setup-app .app-intro {
+  font-size: var(--s2-body-m-size, 14px);
+  color: var(--s2-gray-600, #767676);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-300, 16px);
+}
+
+ew-setup-app .app-title {
+  font-size: var(--s2-heading-xl-size, 28px);
+  font-weight: 700;
+  margin: 0 0 var(--spacing-400, 24px);
+  color: var(--s2-gray-900, #1a1a1a);
+  letter-spacing: -0.02em;
+}
+
+ew-setup-app .org-site-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-300, 16px);
+  align-items: flex-end;
+  margin-bottom: var(--spacing-600, 40px);
+}
+
+ew-setup-app .org-site-field {
+  flex: 1 1 18rem;
+  min-width: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-75, 6px);
+}
+
+ew-setup-app .org-site-label {
+  font-size: var(--s2-body-s-size, 13px);
+  font-weight: 600;
+  color: var(--s2-gray-800, #222);
+}
+
+ew-setup-app .org-site-submit {
+  flex: 0 0 auto;
+  align-self: flex-end;
+}
+
+ew-setup-app .steps {
+  display: flex;
+  gap: var(--spacing-100, 8px);
+  align-items: center;
+  margin-bottom: var(--spacing-400, 24px);
+}
+
+ew-setup-app .step-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--s2-body-s-size, 13px);
+  font-weight: 700;
+  border: 2px solid var(--s2-gray-300, #ccc);
+  color: var(--s2-gray-400, #aaa);
+  flex-shrink: 0;
+}
+
+ew-setup-app .step-badge.active { background: var(--ew-accent); border-color: var(--ew-accent); color: #fff; }
+ew-setup-app .step-badge.done { border-color: var(--s2-green-700, #2d9e4f); color: var(--s2-green-700, #2d9e4f); }
+ew-setup-app .step-label { font-size: var(--s2-body-s-size, 13px); color: var(--s2-gray-600, #767676); }
+ew-setup-app .step-label.active { color: var(--s2-gray-900, #1a1a1a); font-weight: 600; }
+ew-setup-app .step-divider { flex: 0 0 28px; height: 1px; background: var(--s2-gray-200, #e0e0e0); }
+
+ew-setup-app .card {
+  background: var(--s2-gray-50, #f9f9f9);
+  border: 1px solid var(--s2-gray-200, #e0e0e0);
+  border-radius: var(--s2-radius-200, 10px);
+  padding: var(--spacing-400, 24px) var(--spacing-500, 32px);
+}
+
+ew-setup-app .card-title {
+  font-size: var(--s2-heading-s-size, 18px);
+  font-weight: 700;
+  margin: 0 0 var(--spacing-300, 16px);
+  color: var(--s2-gray-900, #1a1a1a);
+}
+
+ew-setup-app .remediation-link { display: inline-block; margin-top: var(--spacing-75, 6px); font-size: var(--s2-body-s-size, 13px); color: var(--ew-accent); }
+
+ew-setup-app .scope-intro {
+  font-size: var(--s2-body-m-size, 14px);
+  color: var(--s2-gray-700, #444);
+  margin: 0 0 var(--spacing-200, 12px);
+}
+
+ew-setup-app .scope-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-150, 10px);
+  margin-bottom: var(--spacing-300, 16px);
+}
+
+ew-setup-app .scope-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-200, 12px);
+  padding: var(--spacing-200, 12px) var(--spacing-300, 16px);
+  border: 1px solid var(--s2-gray-200, #e0e0e0);
+  border-radius: var(--s2-radius-100, 6px);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+ew-setup-app .scope-option:has(input:checked) {
+  border-color: var(--ew-accent);
+  background: color-mix(in srgb, var(--ew-accent) 6%, #fff);
+}
+
+ew-setup-app .scope-option input[type="radio"] {
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--ew-accent);
+}
+
+ew-setup-app .scope-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+ew-setup-app .scope-option-label {
+  font-size: var(--s2-body-m-size, 14px);
+  font-weight: 600;
+  color: var(--s2-gray-900, #1a1a1a);
+}
+
+ew-setup-app .scope-option-desc {
+  font-size: var(--s2-body-s-size, 13px);
+  color: var(--s2-gray-600, #767676);
+  line-height: 1.4;
+}
+
+ew-setup-app .canvas-link-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: var(--spacing-300, 16px) 0 var(--spacing-100, 8px);
+  padding: var(--spacing-200, 12px) var(--spacing-300, 16px);
+  background: color-mix(in srgb, var(--ew-accent) 6%, #fff);
+  border: 1px solid color-mix(in srgb, var(--ew-accent) 25%, #fff);
+  border-radius: var(--s2-radius-100, 6px);
+}
+
+ew-setup-app .canvas-link-label {
+  font-size: var(--s2-body-s-size, 13px);
+  font-weight: 600;
+  color: var(--s2-gray-700, #444);
+}
+
+ew-setup-app .canvas-link {
+  font-size: var(--s2-body-m-size, 14px);
+  color: var(--ew-accent);
+  font-weight: 500;
+  word-break: break-all;
+}
+
+ew-setup-app .cta-bar {
+  margin-top: var(--spacing-400, 24px);
+  display: flex;
+  gap: var(--spacing-200, 12px);
+  align-items: center;
+}
+
+ew-setup-app .config-snippet {
+  background: var(--s2-gray-100, #f0f0f0);
+  border: 1px solid var(--s2-gray-200, #e0e0e0);
+  border-radius: var(--s2-radius-100, 6px);
+  padding: var(--spacing-200, 12px);
+  font-family: var(--fixed-font-family, monospace);
+  font-size: var(--s2-body-s-size, 13px);
+  color: var(--s2-gray-900, #1a1a1a);
+  margin: var(--spacing-200, 12px) 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+ew-setup-app .success-msg { color: var(--s2-green-900, #2d9e4f); font-size: var(--s2-body-s-size, 13px); margin: 0 0 var(--spacing-200, 12px); }
+ew-setup-app .error-msg { color: var(--s2-red-900, #c9271a); font-size: var(--s2-body-s-size, 13px); line-height: 1.5; }
+
+ew-setup-app .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--s2-gray-200, #e0e0e0);
+  border-top-color: var(--ew-accent);
+  border-radius: 50%;
+  animation: ew-spin 0.85s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes ew-spin { to { transform: rotate(360deg); } }
+
+
+@media (width <= 600px) {
+  ew-setup-app .org-site-row { flex-direction: column; align-items: stretch; }
+  ew-setup-app .org-site-submit { width: 100%; }
+  ew-setup-app .card { padding: var(--spacing-300, 16px); }
+}

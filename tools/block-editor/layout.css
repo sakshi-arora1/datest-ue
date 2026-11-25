@@ -1,0 +1,29 @@
+.ew-page-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2-spacing-200, 16px);
+  max-height: 100%;
+}
+
+.ew-pm-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2-spacing-300, 24px);
+  overflow: auto;
+  margin-bottom: var(--s2-spacing-200, 16px);
+  padding: 0 var(--s2-spacing-200, 16px);
+}
+
+.ew-pm-control {
+  flex: 1;
+  min-width: 0;
+}
+
+.ew-pm-control .nx-input,
+.ew-pm-control nx-picker {
+  width: 100%;
+}
+
+.ew-pm-control nx-picker[inert] {
+  opacity: 0.6;
+}
