@@ -1,41 +1,30 @@
 {
-  "name": "@adobe/aem-block-collection",
+  "name": "@adobe/aem-boilerplate",
   "private": true,
-  "version": "1.0.0",
-  "description": "Block collection for AEM",
+  "version": "1.3.0",
+  "description": "Starter project for Adobe Helix",
   "scripts": {
     "lint:js": "eslint .",
-    "lint:css": "stylelint 'blocks/**/*.css' 'styles/*.css'",
+    "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
     "lint": "npm run lint:js && npm run lint:css",
-    "test": "node --experimental-detect-module --test test/",
-    "build:json": "npm-run-all -p build:json:models build:json:definitions build:json:filters build:json:mappings build:json:property-forms",
-    "build:json:models": "merge-json-cli -i \"ue/models/component-models.json\" -o \"component-models.json\"",
-    "build:json:definitions": "merge-json-cli -i \"ue/models/component-definition.json\" -o \"component-definition.json\"",
-    "build:json:filters": "merge-json-cli -i \"ue/models/component-filters.json\" -o \"component-filters.json\"",
-    "build:json:mappings": "merge-json-cli -i \"ue/models/component-json-mappings.json\" -o \"component-json-mappings.json\"",
-    "build:json:property-forms": "merge-json-cli -i \"ue/models/component-property-forms.json\" -o \"component-property-forms.json\"",
-    "prepare": "husky"
+    "lint:fix": "npm run lint:js -- --fix && npm run lint:css -- --fix"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adobe/aem-block-collection.git"
+    "url": "git+https://github.com/adobe/aem-boilerplate.git"
   },
   "author": "Adobe",
   "license": "Apache License 2.0",
   "bugs": {
-    "url": "https://github.com/adobe/aem-block-collection/issues"
+    "url": "https://github.com/adobe/aem-boilerplate/issues"
   },
-  "homepage": "https://github.com/adobe/aem-block-collection#readme",
+  "homepage": "https://github.com/adobe/aem-boilerplate#readme",
   "devDependencies": {
-    "@adobe/da-sc-sdk": "^0.6.1",
-    "@babel/eslint-parser": "7.24.8",
-    "eslint": "8.57.0",
+    "@babel/eslint-parser": "7.29.13",
+    "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
-    "eslint-plugin-import": "2.29.1",
-    "husky": "^9.1.7",
-    "merge-json-cli": "^1.0.4",
-    "npm-run-all": "^4.1.5",
-    "stylelint": "16.7.0",
-    "stylelint-config-standard": "36.0.1"
+    "eslint-plugin-import": "2.32.0",
+    "stylelint": "18.1.0",
+    "stylelint-config-standard": "41.1.0"
   }
 }

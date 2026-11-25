@@ -14,11 +14,7 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta property="og:title" content="Page not found">
-  <script nonce="aem" src="/scripts/aem.js" type="module"></script>
   <script nonce="aem" src="/scripts/scripts.js" type="module"></script>
-  <link rel="stylesheet" href="/styles/styles.css"/>
-
-  <!--  404 Specific Content  -->
   <script nonce="aem" type="module">
     window.addEventListener('load', () => {
       if (document.referrer) {
@@ -42,7 +38,7 @@
   <link rel="stylesheet" href="/styles/styles.css">
   <style>
     main.error {
-      min-height: calc(100vh - var(--header-height));
+      min-height: calc(100vh - var(--nav-height));
       display: flex;
       align-items: center;
     }
@@ -52,9 +48,10 @@
     }
 
     main.error .error-number text {
-      font-family: var(--fixed-font-family);
+      font-family: monospace;
     }
   </style>
+  <link rel="stylesheet" href="/styles/lazy-styles.css">
 </head>
 
 <body>
